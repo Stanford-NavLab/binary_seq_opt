@@ -65,7 +65,7 @@ function solve_bcd_subproblem(
                 # create reduced Y matrix
                 Y = hcat([circshift(reverse(X[:, j]), k) 
                           for k in prob_data.variable_rows[i]]...)
-    
+
                 for k=0:L-1
                     add_to_expression!(
                         ecorr[(i, j, k)], 
