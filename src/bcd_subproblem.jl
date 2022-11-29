@@ -26,20 +26,22 @@ function solve_bcd_subproblem(
     @expression(model, corr[(i, j, k) in prob_data.variable_correlation_set], 
                 AffExpr(dot(X[:, i], circshift(X[:, j], k))))
     for (i, j, k) in prob_data.variable_correlation_set
-        for l = 1:L
-            m = mod1(l - k, L)
+        for _l = 1:L
+            _m = mod1(_l - k, L)
+            if i == j
+                l, m = min(_l, _m), max(_l, _m)
+            else
+                l, m = _l, _m
+            end
             if (l, i, m, j) in prob_data.quad_index_set
                 base = X[l, i] * X[m, j]
-                add_to_expression!(corr[(i, j, k)], -base)
-                add_to_expression!(corr[(i, j, k)], z[(l, i, m, j)])
+                add_to_expression!(corr[(i, j, k)], z[(l, i, m, j)] - base)
             elseif (l, i) in prob_data.index_set
                 base = X[l, i] * X[m, j]
-                add_to_expression!(corr[(i, j, k)], -base)
-                add_to_expression!(corr[(i, j, k)], x[(l, i)] * X[m, j])
+                add_to_expression!(corr[(i, j, k)], x[(l, i)] * X[m, j] - base)
             elseif (m, j) in prob_data.index_set
                 base = X[l, i] * X[m, j]
-                add_to_expression!(corr[(i, j, k)], -base)
-                add_to_expression!(corr[(i, j, k)], X[l, i] * x[(m, j)])
+                add_to_expression!(corr[(i, j, k)], X[l, i] * x[(m, j)] - base)
             end
         end
     end

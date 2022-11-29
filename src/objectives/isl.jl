@@ -6,16 +6,20 @@ function ISL(X::Matrix{Int})
 
     auto = hcat([
         real(ifft(FX[k] .* conj.(FX[k])))[2:end] for k = 1:K]...)
-    cross = hcat([
-        real(ifft(FX[i] .* conj.(FX[j]))) for i = 1:K for j = i+1:K]...)
+    if K > 1
+        cross = hcat([
+            real(ifft(FX[i] .* conj.(FX[j]))) for i = 1:K for j = i+1:K]...)
 
-    return mean(
-        vcat(
-            2vec(auto) .^ 2,
-            2 * vec(cross[1, :]) .^ 2,
-            2 * 2vec(cross[2:end, :]) .^ 2,
-        ),
-    )
+        return mean(
+            vcat(
+                2vec(auto) .^ 2,
+                2vec(cross[1, :]) .^ 2,
+                4vec(cross[2:end, :]) .^ 2,
+            ),
+        )
+    else
+        return mean(2vec(auto) .^ 2)
+    end
 end
 
 # form JuMP expression for objective, given correlations
@@ -32,5 +36,5 @@ function ISL(model::Model, prob_data::SubproblemData)
         @expression(model, ecorr2, 0)
     end
 
-    @objective(model, Min, mean(vcat(corr2, ecorr2)))
+    @objective(model, Min, sum(vcat(corr2, ecorr2)))
 end

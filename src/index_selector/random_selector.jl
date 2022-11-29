@@ -7,8 +7,8 @@ struct RandomSampler <: IndexSelector
     columnwise_limit::Int
     patience::Int
     data::SelectorData
-    function RandomSampler(L::Int, K::Int, M::Int, patience::Int; 
-        columnwise_limit::Real = Inf
+    function RandomSampler(L::Int, K::Int, M::Int; 
+        patience=typemax(Int), columnwise_limit::Int = typemax(Int)
     )
         new(L, K, M,  columnwise_limit, patience, SelectorData(L, K))
     end
