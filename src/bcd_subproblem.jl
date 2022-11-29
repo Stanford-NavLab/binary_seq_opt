@@ -1,5 +1,16 @@
 
-""" Create and solve JuMP model """
+""" Create and solve JuMP model for solving BCD subproblem
+    X: binary code matrix, size (sequence length, number of sequences)
+    index_list: list of tuples of indices of X which are variable
+    solver: JuMP-compatible MIP solver
+        - Example instantiation for solver:
+            solver = optimizer_with_attributes(
+                Gurobi.Optimizer,
+                "OutputFlag" => 1,
+                "MIPGap" => 1e-10,
+            )
+        - to solve using brute-force, pass solver = nothing
+"""
 function solve_bcd_subproblem(
     X::Matrix{Int}, index_list::Vector{Tuple{Int,Int}}, obj::Function, solver
 )
@@ -22,17 +33,18 @@ function solve_bcd_subproblem(
         @constraint(model, z[(ij, j, ik, k)] >= x[(ij, j)] + x[(ik, k)] - 1)
     end
 
-    # build internal correlation expressions
+    # build internal correlation expressions, populate with current values
     @expression(model, corr[(i, j, k) in prob_data.variable_correlation_set], 
                 AffExpr(dot(X[:, i], circshift(X[:, j], k))))
+
+    # correlation between columns i and j at shift k
     for (i, j, k) in prob_data.variable_correlation_set
         for _l = 1:L
             _m = mod1(_l - k, L)
-            if i == j
-                l, m = min(_l, _m), max(_l, _m)
-            else
-                l, m = _l, _m
-            end
+            # if autocorrelation, sort (_l, _m) to ensure no duplicate
+            l, m = i == j ? (min(_l, _m), max(_l, _m)) : (_l, _m)
+
+            # replace constant terms with affine expressions
             if (l, i, m, j) in prob_data.quad_index_set
                 base = X[l, i] * X[m, j]
                 add_to_expression!(corr[(i, j, k)], z[(l, i, m, j)] - base)
@@ -46,8 +58,9 @@ function solve_bcd_subproblem(
         end
     end
 
-    # build external correlation expressions, if any
+    # build external correlation expressions (affine expressions), if any
     if length(prob_data.fixed_cols) > 0
+        # correlations between fixed column j and column i at fixed indices
         function constant_corr_vector(i::Int, j::Int)
             YSc = hcat([circshift(reverse(X[:, j]), k) 
                         for k in prob_data.fixed_rows[i]]...)
@@ -67,17 +80,16 @@ function solve_bcd_subproblem(
                 # create reduced Y matrix
                 Y = hcat([circshift(reverse(X[:, j]), k) 
                           for k in prob_data.variable_rows[i]]...)
-
                 for k=0:L-1
                     add_to_expression!(
                         ecorr[(i, j, k)], 
                         dot(Y[k + 1, :],
                         [x[(l, i)] for l in prob_data.variable_rows[i]]))
                 end
-
             end
         end
     else
+        # every column contains a variable: no external correlations
         @expression(model, ecorr, 0)
     end
 
@@ -85,11 +97,11 @@ function solve_bcd_subproblem(
     obj(model, prob_data)
     optimize!(model)
 
+    # return optimized matrix
     Xnew = copy(X)
     for (i, j) in index_list
         Xnew[i, j] = Int(round(value(x[(i, j)])))
     end
-
     return Xnew
 end
 

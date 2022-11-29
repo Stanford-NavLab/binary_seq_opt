@@ -1,4 +1,9 @@
+"""
+To get a Gold code family with length L, call:
+G = bin_to_pm1(get_gold_code_family(L))'
 
+G is a Lx(L+2) matrix
+"""
 
 function get_lfsr_sequence(tap_array::Array{Int}, reg::Array{Int})
     # returns LFSR sequence as binary (0,1) sequence
