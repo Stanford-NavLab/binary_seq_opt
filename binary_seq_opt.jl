@@ -58,6 +58,4 @@ include("src/bcd.jl")
 # bcd(10)
 
 # using Plots
-# plot!(bcd.obj_values)
-
-
+# plot(bcd.obj_values)

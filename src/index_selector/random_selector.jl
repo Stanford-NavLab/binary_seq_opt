@@ -58,7 +58,7 @@ function generate_log(f::RandomSampler)
         "K" => f.K,
         "M" => f.M,
         "patience" => f.patience,
-        "columnwise_limit" => columnwise_limit,
+        "columnwise_limit" => f.columnwise_limit,
     )
     return merge(log, generate_log(f.data))
 end

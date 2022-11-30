@@ -60,10 +60,10 @@ end
 """ Generate log dictionary """
 function generate_log(f::SelectorData)
     return Dict(
-        "not_improved_global" => f.data.not_improved_global,
-        "not_improved_columnwise" => f.data.not_improved_columnwise,
-        "best_objective" => f.data.best_objective,
-        "total_visits" => f.data.total_visits,
-        "prev_visited" => f.data.prev_visited,
+        "not_improved_global" => f.not_improved_global,
+        "not_improved_columnwise" => f.not_improved_columnwise,
+        "best_objective" => f.best_objective,
+        "total_visits" => f.total_visits,
+        "prev_visited" => f.prev_visited,
     )
 end
