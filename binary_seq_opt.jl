@@ -24,7 +24,7 @@ include("src/bcd.jl")
 
 # using Gurobi
 
-
+# """ check that solver & brute force agree """
 # function test_bcd(L::Int, K::Int, M::Int, obj::Function)
 #     solver = optimizer_with_attributes(
 #         Gurobi.Optimizer,
@@ -38,9 +38,8 @@ include("src/bcd.jl")
 #     Xbrute = solve_bcd_subproblem(X0, index_list, obj, nothing)
 #     return obj(Xsolve) ≈ obj(Xbrute)
 # end
+# [@assert test_bcd(31, 13, 7, ISL) for _=1:1000]
 
-
-# # test
 
 # solver = optimizer_with_attributes(
 #     Gurobi.Optimizer,
@@ -52,10 +51,10 @@ include("src/bcd.jl")
 # Random.seed!(0)
 # X0 = randb(31, 2)
 
-# index_selector = RandomSampler(31, 2, 13; columnwise_limit=8)
-# bcd = BCD(index_selector, ISL, nothing)
+# index_selector = RandomSampler(31, 11, 7; columnwise_limit=8)
+# bcd = BCD(index_selector, ISL, solver)
 
-# bcd(10)
+# bcd(100)
 
 # using Plots
 # plot(bcd.obj_values)

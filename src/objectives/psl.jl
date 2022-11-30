@@ -17,7 +17,5 @@ function PSL(model::Model, prob_data::SubproblemData)
     @variable(model, t)
     @constraint(model, model[:corr] .<= t)
     @constraint(model, -model[:corr] .<= t)
-    @constraint(model, model[:ecorr] .<= t)
-    @constraint(model, -model[:ecorr] .<= t)
     @objective(model, Min, t)
 end

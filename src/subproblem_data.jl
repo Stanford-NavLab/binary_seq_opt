@@ -74,7 +74,9 @@ end
     # query column => indices of variables
     # query column => indices of fixed parameters
     # query quadratic z indices
-    # index set (i,j,k) for auto and cross correlations
+    # index set (i,j,k) for all auto and cross correlations
+    # index set (i,j,k) for all variable auto and cross correlations
+    # index set (i,j,k) for all fixed auto and cross correlations
 """
 struct SubproblemData
     L::Int
@@ -85,6 +87,7 @@ struct SubproblemData
     variable_rows::Dict{Int,Vector{Int}}
     fixed_rows::Dict{Int,Vector{Int}}
     quad_index_set::Set{Tuple{Int,Int,Int,Int}}
+    correlation_set::Set{Tuple{Int,Int,Int}}
     variable_correlation_set::Set{Tuple{Int,Int,Int}}
     fixed_correlation_set::Set{Tuple{Int,Int,Int}}
     function SubproblemData(X::Matrix{Int}, index_list::Vector{Tuple{Int,Int}})
@@ -95,8 +98,19 @@ struct SubproblemData
         correlation_indices = form_correlation_indices(L, v_cols)
         fixed_correlation_set = Set([
             (i, j, k) for i in v_cols for j in p_cols for k = 0:L - 1])
+        correlation_set = union(correlation_indices, fixed_correlation_set)
 
-        new(L, K, Set(index_list), v_cols, p_cols, v_dict, p_dict, 
-            quad_index_set, correlation_indices, fixed_correlation_set)
+        new(L,
+            K,
+            Set(index_list),
+            v_cols,
+            p_cols,
+            v_dict,
+            p_dict, 
+            quad_index_set,
+            correlation_set,
+            correlation_indices,
+            fixed_correlation_set
+        )
     end
 end

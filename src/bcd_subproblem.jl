@@ -33,9 +33,24 @@ function solve_bcd_subproblem(
         @constraint(model, z[(ij, j, ik, k)] >= x[(ij, j)] + x[(ik, k)] - 1)
     end
 
+    # correlations between fixed column j and variable column i at fixed indices
+    function constant_corr_vector(i::Int, j::Int)
+        YSc = hcat([circshift(reverse(X[:, j]), k) 
+                    for k in prob_data.fixed_rows[i]]...)
+        xsc = X[prob_data.fixed_rows[i], i]
+        return YSc * xsc
+    end
+
+    Y = Dict((i, j) => constant_corr_vector(i, j)
+        for i in prob_data.variable_cols for j in prob_data.fixed_cols
+    )
+
     # build internal correlation expressions, populate with current values
-    @expression(model, corr[(i, j, k) in prob_data.variable_correlation_set], 
-                AffExpr(dot(X[:, i], circshift(X[:, j], k))))
+    @expression(model, corr[(i, j, k) in prob_data.correlation_set], 
+        (i, j, k) in prob_data.variable_correlation_set 
+        ? AffExpr(dot(X[:, i], circshift(X[:, j], k))) 
+        : AffExpr(Y[(i, j)][k + 1])
+    )
 
     # correlation between columns i and j at shift k
     for (i, j, k) in prob_data.variable_correlation_set
@@ -60,21 +75,7 @@ function solve_bcd_subproblem(
 
     # build external correlation expressions (affine expressions), if any
     if length(prob_data.fixed_cols) > 0
-        # correlations between fixed column j and column i at fixed indices
-        function constant_corr_vector(i::Int, j::Int)
-            YSc = hcat([circshift(reverse(X[:, j]), k) 
-                        for k in prob_data.fixed_rows[i]]...)
-            xsc = X[prob_data.fixed_rows[i], i]
-            return YSc * xsc
-        end
-        Y = Dict((i, j) => constant_corr_vector(i, j)
-            for i in prob_data.variable_cols for j in prob_data.fixed_cols
-        )
-
-        @expression(model, 
-                    ecorr[(i, j, k) in prob_data.fixed_correlation_set], 
-                    AffExpr(Y[(i, j)][k + 1]))
-
+        # column i contains variables, column j is fixed
         for i in prob_data.variable_cols
             for j in prob_data.fixed_cols
                 # create reduced Y matrix
@@ -82,15 +83,12 @@ function solve_bcd_subproblem(
                           for k in prob_data.variable_rows[i]]...)
                 for k=0:L-1
                     add_to_expression!(
-                        ecorr[(i, j, k)], 
+                        corr[(i, j, k)], 
                         dot(Y[k + 1, :],
                         [x[(l, i)] for l in prob_data.variable_rows[i]]))
                 end
             end
         end
-    else
-        # every column contains a variable: no external correlations
-        @expression(model, ecorr, 0)
     end
 
     # form objective and solve

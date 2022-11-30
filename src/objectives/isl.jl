@@ -26,15 +26,6 @@ end
 function ISL(model::Model, prob_data::SubproblemData)
     @expression(model, corr2, sum([
         (k == 0 ? 1 : 2) * model[:corr][(i, j, k)] ^ 2 
-        for (i, j, k) in prob_data.variable_correlation_set]))
-
-    if length(prob_data.fixed_cols) > 0
-        @expression(model, ecorr2, sum([
-            (k == 0 ? 1 : 2) * model[:ecorr][(i, j, k)] ^ 2 
-            for (i, j, k) in prob_data.fixed_correlation_set]))
-    else
-        @expression(model, ecorr2, 0)
-    end
-
-    @objective(model, Min, sum(vcat(corr2, ecorr2)))
+        for (i, j, k) in prob_data.correlation_set]))
+    @objective(model, Min, sum(corr2))
 end
