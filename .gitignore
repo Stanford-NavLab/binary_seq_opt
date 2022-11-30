@@ -28,3 +28,6 @@ Manifest.toml
 
 # julia serialization files
 *.jls
+
+# default results path
+/results
