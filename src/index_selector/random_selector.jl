@@ -5,24 +5,37 @@ struct RandomSampler <: IndexSelector
     K::Int
     M::Int
     columnwise_limit::Int
+    max_columns::Int
     patience::Int
     data::SelectorData
     function RandomSampler(L::Int, K::Int, M::Int; 
-        patience=typemax(Int), columnwise_limit::Int = typemax(Int)
+        patience=typemax(Int), 
+        columnwise_limit::Int = typemax(Int),
+        max_columns::Int = K,
     )
-        new(L, K, M,  columnwise_limit, patience, SelectorData(L, K))
+        new(L, K, M, columnwise_limit, max_columns,
+            patience, SelectorData(L, K))
     end
 end
 
 """ Generate indices to optimize over """
 function pre(f::RandomSampler)
+    column_set = Set{Int}()
     inds = Dict{Int,Vector{Int}}(i => collect(1:f.L) for i=1:f.K)
     index_list = Vector{Tuple{Int,Int}}()
     for _=1:f.M
         j = rand([k for (k, s) in inds if length(s) > f.L - f.columnwise_limit])
         i = rand(1:length(inds[j]))
+        push!(column_set, j)
         push!(index_list, (inds[j][i], j))
         deleteat!(inds[j], i)
+        if length(column_set) >= f.max_columns
+            for col=1:f.K
+                if !(col in column_set)
+                    delete!(inds, col)
+                end
+            end
+        end
     end
     return index_list
 end

@@ -1,6 +1,6 @@
 
 # calculate objective for a given matrix
-function PSL(X::Matrix{Int})
+function PSL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
     K = size(X)[2]
     FX = [fft(X[:, k]) for k = 1:K]
 
