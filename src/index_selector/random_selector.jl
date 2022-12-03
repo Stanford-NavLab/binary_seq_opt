@@ -1,6 +1,7 @@
 
 """ Select M random indices """
 struct RandomSampler <: IndexSelector
+    name::String
     L::Int
     K::Int
     M::Int
@@ -13,7 +14,8 @@ struct RandomSampler <: IndexSelector
         columnwise_limit::Int = typemax(Int),
         max_columns::Int = K,
     )
-        new(L, K, M, columnwise_limit, max_columns,
+        name = "RandomSampler_$(L)_$(K)_$(M)"
+        new(name, L, K, M, columnwise_limit, max_columns,
             patience, SelectorData(L, K))
     end
 end

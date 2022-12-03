@@ -15,7 +15,7 @@ struct BCD{I,O,S,D}
         solver;
         X0::Matrix{Int}=randb(index_selector.L, index_selector.K),
         log_path::String="", 
-        log_name::String="BCDOpt" * Dates.format(now(), "HH_MM_SS_MS") * ".jls",
+        log_name::String="BCD-"* index_selector.name * "-" * Dates.format(now(), "HH_MM_SS_MS") * ".jls",
         log_freq::Int=1,
     )
         new{typeof(index_selector),
