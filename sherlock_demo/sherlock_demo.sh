@@ -8,8 +8,8 @@
 #SBATCH --error=FAILURE_bcd_e%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH -c 4
-#SBATCH --mem=4G
+#SBATCH -c 8
+#SBATCH --mem=9G
 #SBATCH --partition=normal
 #####################################
 
@@ -29,4 +29,4 @@ export GUROBI_HOME="/share/software/user/restricted/gurobi/9.0.3_py36"
 lscpu
 
 # Run script
-julia sherlock_demo.jl 0 31 7 15 ISL
+julia sherlock_demo.jl 0 127 100 700 PSL 10
