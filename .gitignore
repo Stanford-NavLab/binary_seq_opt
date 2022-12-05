@@ -31,3 +31,6 @@ Manifest.toml
 
 # default results path
 /results
+
+# sherlock output files
+*.txt
