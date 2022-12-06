@@ -12,6 +12,7 @@ include("src/bcd_subproblem.jl")
 # load objective functions
 include("src/objectives/isl.jl")
 include("src/objectives/psl.jl")
+include("src/objectives/asl.jl")
 
 # index selection strategies
 abstract type IndexSelector end

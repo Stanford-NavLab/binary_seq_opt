@@ -1,6 +1,6 @@
 
 # calculate objective for a given matrix
-function ISL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
+function ASL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
     K = size(X)[2]
     FX = [fft(X[:, k]) for k = 1:K]
 
@@ -12,19 +12,22 @@ function ISL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
 
         return mean(
             vcat(
-                2vec(auto) .^ 2,
-                2vec(cross[1, :]) .^ 2,
-                4vec(cross[2:end, :]) .^ 2,
+                2abs.(vec(auto)),
+                2abs.(vec(cross[1, :])),
+                4abs.(vec(cross[2:end, :])),
             ),
         )
     else
-        return mean(2vec(auto) .^ 2)
+        return mean(2abs.(vec(auto)))
     end
 end
 
 # form JuMP expression for objective, given correlations
-function ISL(model::Model, prob_data::SubproblemData)
+function ASL(model::Model, prob_data::SubproblemData)
+    @variable(model, abs_corr[prob_data.correlation_set])
+    @constraint(model, model[:corr] .<= abs_corr)
+    @constraint(model, -model[:corr] .<= abs_corr)
     @objective(model, Min, 2sum([
-        (k == 0 ? 1 : 2) * model[:corr][(i, j, k)] ^ 2 
+        (k == 0 ? 1 : 2) * abs_corr[(i, j, k)] 
         for (i, j, k) in prob_data.correlation_set]))
 end

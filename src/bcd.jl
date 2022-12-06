@@ -1,6 +1,7 @@
 
 """ Block coordinate descent for binary sequence set optimization """
 struct BCD{I,O,S,D}
+    X0::Matrix{Int}
     X::Matrix{Int}
     index_selector::I
     objective::O
@@ -15,7 +16,7 @@ struct BCD{I,O,S,D}
         solver;
         X0::Matrix{Int}=randb(index_selector.L, index_selector.K),
         log_path::String="", 
-        log_name::String="BCD-"* index_selector.name * "-" * Dates.format(now(), "HH_MM_SS_MS") * ".jls",
+        log_name::String="BCD-"* string(objective) * "-" * index_selector.name * "-" * Dates.format(now(), "HH_MM_SS_MS") * ".jls",
         log_freq::Int=1,
     )
         new{typeof(index_selector),
@@ -24,6 +25,7 @@ struct BCD{I,O,S,D}
             typeof(log)
         }(
             X0,
+            copy(X0),
             index_selector,
             objective,
             solver,
@@ -73,6 +75,7 @@ function log!(f::BCD, t::Int)
             "objective" => string(f.objective),
             "solver" => string(f.solver),
             "X" => f.X,
+            "X0" => f.X0,
             "obj_values" => f.obj_values,
             "log_path" => f.log_path,
             "log_name" => f.log_name,
