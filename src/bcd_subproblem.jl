@@ -25,6 +25,13 @@ function solve_bcd_subproblem(
     @expression(model, x, 2_x .- 1)
     @variable(model, z[prob_data.quad_index_set])
 
+    # constrain sum of each column to be >= 0 wlog
+    for k in prob_data.variable_cols
+        @constraint(model, sum([
+            (i, k) in prob_data.index_set ? x[(i, k)] : X[i, k] 
+            for i=1:L]) >= 0)
+    end
+
     # generate linking constraints for auxiliary variables
     for (ij, j, ik, k) in prob_data.quad_index_set
         @constraint(model, z[(ij, j, ik, k)] <= x[(ij, j)] - x[(ik, k)] + 1)
