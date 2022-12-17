@@ -19,6 +19,13 @@ struct BCD{I,O,S,D}
         log_name::String="BCD-"* string(objective) * "-" * index_selector.name * "-" * Dates.format(now(), "HH_MM_SS_MS") * ".jls",
         log_freq::Int=1,
     )
+        # constraint: all columns must have nonnegative sum
+        for k=1:size(X0)[2]
+            if sum(X0[:, k]) < 0
+                X0[:, k] *= -1
+            end
+        end
+
         new{typeof(index_selector),
             typeof(objective),
             typeof(solver),
