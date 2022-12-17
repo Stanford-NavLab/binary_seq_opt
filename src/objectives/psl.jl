@@ -31,8 +31,8 @@ function PSL(model::Model, prob_data::SubproblemData)
     # square_signed = (a) -> sign(a) * a^2
     # form_coef = (a) -> square_signed(rand((-1,1)) * p - a)
     # form_coef = (a) -> square_signed(sign(a + 1e-9rand((-1,1))) * p - a)
-    form_coef = (a) -> rand((-1, 1))
-    # form_coef = (a) -> sign(a + 0.5rand((-1, 1)))
+    # form_coef = (a) -> rand((-1, 1))
+    form_coef = (a) -> sign(a + 0.5rand((-1, 1)))
 
     c = Dict([
         # (i, j, k) => sign(value(model[:corr][(i,j,k)]) + 1e-9(rand()-0.5))
