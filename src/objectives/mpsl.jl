@@ -20,7 +20,7 @@ function MPSL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
 end
 
 # form JuMP expression for objective, given correlations
-function MPSL(model::Model, prob_data::SubproblemData, t::Int, X::Matrix{Int})
+function MPSL(model::Model, prob_data::SubproblemData, t::Int, X::Matrix{Int}, stop_if_improved::Bool)
     # average of peak correlations
     inds = collect(Set([(i, j) for (i, j, _) in prob_data.correlation_set]))
     @variable(model, t[inds])
@@ -30,10 +30,17 @@ function MPSL(model::Model, prob_data::SubproblemData, t::Int, X::Matrix{Int})
     end
 
     if prob_data.K > 1
-        @objective(model, Min,
-            sum([(i == j ? 1.0 : 2.0) * t[(i, j)] for (i, j) in inds])
+        @expression(model, J, sum([
+                (i == j ? 1.0 : 2.0) * t[(i, j)] for (i, j) in inds
+            ]) / (prob_data.K + (prob_data.K - 1) * prob_data.K)
         )
     else
-        @objective(model, Min, sum([t[(i, i)] for i=1:prob_data.K]))
+        @expression(model, J, mean([t[(i, i)] for i=1:prob_data.K]))
+    end
+
+    if stop_if_improved
+        @constraint(model, J / MPSL(X) <= 1 - 1e-10)
+    else
+        @objective(model, Min, J)
     end
 end

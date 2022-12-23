@@ -8,6 +8,7 @@ struct BCD{I,O,S,D}
     index_selector::I
     objective::O
     solver::S
+    stop_if_improved::Bool
     obj_values::Vector{Float64}
     log_path::String
     log_name::String
@@ -17,6 +18,7 @@ struct BCD{I,O,S,D}
         objective::Function,
         solver;
         X0::Matrix{Int}=randb(index_selector.L, index_selector.K),
+        stop_if_improved::Bool = false,
         log_path::String="", 
         log_name::String="BCD-"* string(objective) * "-" * index_selector.name * "-" * Dates.format(now(), "HH_MM_SS_MS") * ".jls",
         log_freq::Int=1,
@@ -33,6 +35,7 @@ struct BCD{I,O,S,D}
             index_selector,
             objective,
             solver,
+            stop_if_improved,
             zeros(0),
             log_path,
             log_name,
@@ -69,7 +72,7 @@ end
 function step(f::BCD, t::Int)
     index_list = pre(f.index_selector, f.X)
 
-    Xnew = solve_bcd_subproblem(t, f.X, index_list, f.objective, f.solver)
+    Xnew = solve_bcd_subproblem(t, f.X, index_list, f.objective, f.solver, f.stop_if_improved)
     new_obj = f.objective(Xnew)
     f.X .= Xnew
 

@@ -17,12 +17,17 @@ function PSL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
 end
 
 # form JuMP expression for objective, given correlations
-function PSL(model::Model, prob_data::SubproblemData, iter::Int, X::Matrix{Int})
+function PSL(model::Model, prob_data::SubproblemData, iter::Int, X::Matrix{Int}, stop_if_improved::Bool)
     # solve PSL minimization problem
     @variable(model, t)
     @constraint(model, model[:corr] .<= t)
     @constraint(model, -model[:corr] .<= t)
-    @objective(model, Min, t)
+
+    if stop_if_improved
+        @constraint(model, t/ PSL(X) <= 1 - 1e-10)
+    else
+        @objective(model, Min, t)
+    end
 
     # if iter % 5 == 0
     #     return

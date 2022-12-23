@@ -17,6 +17,7 @@ function solve_bcd_subproblem(
     index_list::Vector{Tuple{Int,Int}},
     obj::Function,
     solver,
+    stop_if_improved::Bool,
 )
     L, _ = size(X)
 
@@ -96,17 +97,17 @@ function solve_bcd_subproblem(
     end
 
     # form objective and solve
-    obj(model, prob_data, t, X)
+    obj(model, prob_data, t, X, stop_if_improved)
     optimize!(model)
 
     # return optimized matrix
     Xnew = copy(X)
-    try
+    if solution_summary(model).result_count > 0
         for (i, j) in index_list
             Xnew[i, j] = Int(round(value(x[(i, j)])))
         end
-    catch
     end
+
     # if !(solution_summary(model).objective_value ≈ obj(Xnew))
     #     display((solution_summary(model).objective_value, obj(Xnew)))
     # end
@@ -122,12 +123,14 @@ function solve_bcd_subproblem(
     index_list::Vector{Tuple{Int,Int}},
     obj::Function,
     solver::Nothing,
+    stop_if_improved::Bool
 )
     L, K = size(X)
     N = length(index_list)
     index_vec = [i + L * (j - 1) for (i, j) in index_list]
     best_obj = Inf
     best_X = copy(X)
+    J_curr = obj(X)
     for i in ProgressBar(0:2^N-1)
         s = bitstring(i)[end-N+1:end]
         x_temp = vec(copy(X))
@@ -137,6 +140,9 @@ function solve_bcd_subproblem(
         if J < best_obj
             best_X .= X_temp
             best_obj = J
+        end
+        if stop_if_improved && J < J_curr
+            return best_X
         end
     end
     return best_X

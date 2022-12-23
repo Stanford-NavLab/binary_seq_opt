@@ -23,7 +23,7 @@ function ASL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
 end
 
 # form JuMP expression for objective, given correlations
-function ASL(model::Model, prob_data::SubproblemData, t::Int, X::Matrix{Int})
+function ASL(model::Model, prob_data::SubproblemData, t::Int, X::Matrix{Int}, stop_if_improved::Bool)
     @variable(model, abs_corr[prob_data.correlation_set])
     @constraint(model, model[:corr] .<= abs_corr)
     @constraint(model, -model[:corr] .<= abs_corr)
