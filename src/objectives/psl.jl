@@ -17,56 +17,44 @@ function PSL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
 end
 
 # form JuMP expression for objective, given correlations
-function PSL(model::Model, prob_data::SubproblemData)
+function PSL(model::Model, prob_data::SubproblemData, iter::Int, X::Matrix{Int})
     # solve PSL minimization problem
     @variable(model, t)
     @constraint(model, model[:corr] .<= t)
     @constraint(model, -model[:corr] .<= t)
     @objective(model, Min, t)
 
-    # subject to current PSL constraint, push correlations towards a boundary
-    optimize!(model)
-    p = value(t)
+    # if iter % 5 == 0
+    #     return
+    # end
 
-    # square_signed = (a) -> sign(a) * a^2
-    # form_coef = (a) -> square_signed(rand((-1,1)) * p - a)
-    # form_coef = (a) -> square_signed(sign(a + 1e-9rand((-1,1))) * p - a)
-    # form_coef = (a) -> rand((-1, 1))
-    form_coef = (a) -> sign(a + 0.5rand((-1, 1)))
+    # optimize!(model)
+    # p = value(t)
+    # xvals = Dict((i, j) => value.(model[:_x][(i, j)]) for (i, j) in prob_data.index_set)
 
-    c = Dict([
-        # (i, j, k) => sign(value(model[:corr][(i,j,k)]) + 1e-9(rand()-0.5))
-        (i, j, k) => form_coef(value(model[:corr][(i,j,k)]))
-        for (i, j, k) in prob_data.correlation_set
-    ])
+    # # # maximize L1 subject to PSL constraint
+    # @variable(model, _v[prob_data.correlation_set], Bin)
+    # @expression(model, v, 2_v .- 1)
 
-    fix(t, p)
-    @objective(model, Max, sum([
-        c[(i,j,k)] * model[:corr][(i,j,k)] 
-        for (i, j, k) in prob_data.correlation_set
-    ]) / length(prob_data.correlation_set))
+    # @variable(model, vub[prob_data.correlation_set])
+    # @constraint(model, model[:corr] .- v * p .<= vub)
+    # @constraint(model, -model[:corr] .+ v * p .<= vub)
+
+    # @objective(model, Min, mean([
+    #     (i == j ? prob_data.K : 1.0) * vub[(i, j, k)]^2 for (i, j, k) in prob_data.correlation_set
+    # ]))
+
+    # fix(t, p)
+    # for (i, j) in prob_data.index_set
+    #     fix(model[:_x][(i, j)], xvals[(i, j)])
+    # end
+
+    # # one index at a time?
+    # for (i, j) in sample(collect(prob_data.index_set), min(8, length(prob_data.index_set)); replace=false)
+    #     unfix(model[:_x][(i, j)])
+    #     optimize!(model)
+    #     xval_new = value(model[:_x][(i, j)])
+    #     fix(model[:_x][(i, j)], xval_new)
+    # end
+    # @objective(model, Min, 0.0)
 end
-
-
-"""
-
-    choose target: rand((-1, 1)) * p
-
-    rand((-1, 1)) * p - a
-
-    +p
-    |
-    | a1
-    |
-    0
-    |
-    | a2
-    |
-    -p
-
-    -p - a1 = -|p| - |a1|
-    -p - a2 = -|-p - a2|
-
-    +p - a1 = |p-a1|
-    +p - a2 = |p| + |a2|
-""";

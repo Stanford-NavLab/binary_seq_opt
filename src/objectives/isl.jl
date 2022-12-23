@@ -23,7 +23,7 @@ function ISL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
 end
 
 # form JuMP expression for objective, given correlations
-function ISL(model::Model, prob_data::SubproblemData)
+function ISL(model::Model, prob_data::SubproblemData, t::Int, X::Matrix{Int})
     @objective(model, Min, 2sum([
         (k == 0 ? 1 : 2) * model[:corr][(i, j, k)] ^ 2 
         for (i, j, k) in prob_data.correlation_set]))

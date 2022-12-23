@@ -9,24 +9,51 @@ struct RandomSampler <: IndexSelector
     max_columns::Int
     patience::Int
     data::SelectorData
+    boost_col_probs::Bool
     function RandomSampler(L::Int, K::Int, M::Int; 
         patience=typemax(Int), 
         columnwise_limit::Int = typemax(Int),
         max_columns::Int = K,
+        boost_col_probs::Bool = false,
     )
         name = "RandomSampler_$(L)_$(K)_$(M)"
         new(name, L, K, M, columnwise_limit, max_columns,
-            patience, SelectorData(L, K))
+            patience, SelectorData(L, K), boost_col_probs)
     end
 end
 
 """ Generate indices to optimize over """
-function pre(f::RandomSampler)
+function pre(f::RandomSampler, X::Matrix{Int})
     column_set = Set{Int}()
     inds = Dict{Int,Vector{Int}}(i => collect(1:f.L) for i=1:f.K)
     index_list = Vector{Tuple{Int,Int}}()
     for _=1:f.M
-        j = rand([k for (k, s) in inds if length(s) > f.L - f.columnwise_limit])
+        cols = [k for (k, s) in inds if length(s) > f.L - f.columnwise_limit]
+
+        # boost probability of columns with peak correlation values
+        if f.boost_col_probs
+            psl = PSL(X)
+            FX = [fft(X[:, k]) for k = 1:f.K]
+
+            # find columns achieving peak correlation level
+            boost_list = []
+            for i in cols
+                corrs = hcat([
+                    real(ifft(FX[i] .* conj.(FX[j]))) for j = i:f.K]...)
+                if any(abs.(corrs) .> psl - 0.5)
+                    push!(boost_list, i)
+                end
+            end
+
+            # boost probability of choosing those columns
+            append!(cols, vcat([boost_list 
+                for _=1:Int(floor(length(cols) / max(1, length(boost_list))))
+                ]...)
+            )
+        end
+
+        # sample index
+        j = rand(cols)
         i = rand(1:length(inds[j]))
         push!(column_set, j)
         push!(index_list, (inds[j][i], j))

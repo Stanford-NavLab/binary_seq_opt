@@ -3,6 +3,8 @@
 struct BCD{I,O,S,D}
     X0::Matrix{Int}
     X::Matrix{Int}
+    X_best::Matrix{Int}
+    obj_best::Vector{Float64}
     index_selector::I
     objective::O
     solver::S
@@ -19,13 +21,6 @@ struct BCD{I,O,S,D}
         log_name::String="BCD-"* string(objective) * "-" * index_selector.name * "-" * Dates.format(now(), "HH_MM_SS_MS") * ".jls",
         log_freq::Int=1,
     )
-        # constraint: all columns must have nonnegative sum
-        for k=1:size(X0)[2]
-            if sum(X0[:, k]) < 0
-                X0[:, k] *= -1
-            end
-        end
-
         new{typeof(index_selector),
             typeof(objective),
             typeof(solver),
@@ -33,6 +28,8 @@ struct BCD{I,O,S,D}
         }(
             X0,
             copy(X0),
+            copy(X0),
+            [objective(X0)],
             index_selector,
             objective,
             solver,
@@ -48,9 +45,15 @@ end
 function (f::BCD)(T::Int; verbose::Bool = true)
     for t=1:T
         # perform BCD step
-        stop, obj_val = step(f)
+        stop, obj_val = step(f, t)
         push!(f.obj_values, obj_val)
         log!(f, t)
+
+        # update best, if not using a descent method
+        if obj_val < f.obj_best[1]
+            f.obj_best .= obj_val
+            f.X_best .= copy(f.X)
+        end
 
         if verbose
             @printf "Iteration %d Objective: %f\n" t obj_val
@@ -63,10 +66,10 @@ function (f::BCD)(T::Int; verbose::Bool = true)
 end
 
 """ Select indices, perform optimization, update data """
-function step(f::BCD)
-    index_list = pre(f.index_selector)
+function step(f::BCD, t::Int)
+    index_list = pre(f.index_selector, f.X)
 
-    Xnew = solve_bcd_subproblem(f.X, index_list, f.objective, f.solver)
+    Xnew = solve_bcd_subproblem(t, f.X, index_list, f.objective, f.solver)
     new_obj = f.objective(Xnew)
     f.X .= Xnew
 

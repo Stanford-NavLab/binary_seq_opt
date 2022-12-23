@@ -12,7 +12,11 @@
         - to solve using brute-force, pass solver = nothing
 """
 function solve_bcd_subproblem(
-    X::Matrix{Int}, index_list::Vector{Tuple{Int,Int}}, obj::Function, solver
+    t::Int,
+    X::Matrix{Int},
+    index_list::Vector{Tuple{Int,Int}},
+    obj::Function,
+    solver,
 )
     L, _ = size(X)
 
@@ -24,13 +28,6 @@ function solve_bcd_subproblem(
     @variable(model, _x[prob_data.index_set], Bin)
     @expression(model, x, 2_x .- 1)
     @variable(model, z[prob_data.quad_index_set])
-
-    # constrain sum of each column to be >= 0 wlog
-    for k in prob_data.variable_cols
-        @constraint(model, sum([
-            (i, k) in prob_data.index_set ? x[(i, k)] : X[i, k] 
-            for i=1:L]) >= 0)
-    end
 
     # generate linking constraints for auxiliary variables
     for (ij, j, ik, k) in prob_data.quad_index_set
@@ -99,21 +96,32 @@ function solve_bcd_subproblem(
     end
 
     # form objective and solve
-    obj(model, prob_data)
+    obj(model, prob_data, t, X)
     optimize!(model)
 
     # return optimized matrix
     Xnew = copy(X)
-    for (i, j) in index_list
-        Xnew[i, j] = Int(round(value(x[(i, j)])))
+    try
+        for (i, j) in index_list
+            Xnew[i, j] = Int(round(value(x[(i, j)])))
+        end
+    catch
     end
+    # if !(solution_summary(model).objective_value ≈ obj(Xnew))
+    #     display((solution_summary(model).objective_value, obj(Xnew)))
+    # end
+    # @assert solution_summary(model).objective_value ≈ obj(Xnew)
+
     return Xnew
 end
 
 """ solve subproblem via brute force """
 function solve_bcd_subproblem(
-    X::Matrix{Int}, index_list::Vector{Tuple{Int,Int}}, 
-    obj::Function, solver::Nothing
+    t::Int,
+    X::Matrix{Int},
+    index_list::Vector{Tuple{Int,Int}},
+    obj::Function,
+    solver::Nothing,
 )
     L, K = size(X)
     N = length(index_list)
