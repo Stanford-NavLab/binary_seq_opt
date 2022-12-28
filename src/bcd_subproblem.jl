@@ -18,8 +18,9 @@ function solve_bcd_subproblem(
     obj::Function,
     solver,
     stop_if_improved::Bool,
+    disallow_shifts::Bool,
 )
-    L, _ = size(X)
+    L, K = size(X)
 
     # preprocess index list
     prob_data = SubproblemData(X, index_list)
@@ -29,6 +30,24 @@ function solve_bcd_subproblem(
     @variable(model, _x[prob_data.index_set], Bin)
     @expression(model, x, 2_x .- 1)
     @variable(model, z[prob_data.quad_index_set])
+
+    # disallow shifted versions of sequences
+    if disallow_shifts
+        for j in prob_data.variable_cols
+            vrows = prob_data.variable_rows[j]
+            frows = prob_data.fixed_rows[j]
+            Xjk = X[:, j]
+            for l = j:j
+                for k=(j==l ? (1:Int(floor(L/2))) : (0:L-1))
+                    Xlk = circshift(X[:, l], -k)
+                    @constraint(model, 
+                        sum([Xlk[i] * x[(i, j)] for i in vrows]) + 
+                        sum([Xlk[i] * Xjk[i] for i in frows]) <= L - 1
+                    )
+                end
+            end
+        end
+    end
 
     # generate linking constraints for auxiliary variables
     for (ij, j, ik, k) in prob_data.quad_index_set
@@ -123,7 +142,8 @@ function solve_bcd_subproblem(
     index_list::Vector{Tuple{Int,Int}},
     obj::Function,
     solver::Nothing,
-    stop_if_improved::Bool
+    stop_if_improved::Bool,
+    disallow_shifts::Bool,
 )
     L, K = size(X)
     N = length(index_list)
