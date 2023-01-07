@@ -11,6 +11,7 @@ include("src/bcd_subproblem.jl")
 
 # load objective functions
 include("src/objectives/isl.jl")
+include("src/objectives/sos.jl")
 include("src/objectives/asl.jl")
 include("src/objectives/psl.jl")
 include("src/objectives/spsl.jl")
@@ -26,8 +27,16 @@ include("src/index_selector/random_selector.jl")
 include("src/bcd.jl")
 
 
-using Gurobi
-using Plots
+# using Gurobi
+# using Plots
+
+# solver = optimizer_with_attributes(
+#     Gurobi.Optimizer,
+#     "OutputFlag" => 1,
+#     "MIPGap" => 1e-10,
+# )
+# # solver = nothing
+
 
 # """ check that solver & brute force agree """
 # function test_bcd(L::Int, K::Int, M::Int, obj::Function)
@@ -45,13 +54,6 @@ using Plots
 # end
 # [@assert test_bcd(31, 13, 7, ISL) for _=1:1000]
 
-
-solver = optimizer_with_attributes(
-    Gurobi.Optimizer,
-    "OutputFlag" => 1,
-    "MIPGap" => 1e-10,
-)
-# # solver = nothing
 
 # Random.seed!(0)
 # X0 = randb(31, 2)
