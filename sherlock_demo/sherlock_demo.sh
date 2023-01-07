@@ -1,15 +1,15 @@
 #!/bin/bash
 ############################## Submit Job in Julia ######################################
-#SBATCH --time=24:00:00
+#SBATCH --time=48:00:00
 #SBATCH --job-name="bcd"
 #SBATCH --mail-user=yalan@stanford.edu
-#SBATCH --mail-type=BEGIN,END
+#SBATCH --mail-type=END
 #SBATCH --output=bcd_e%j.txt
 #SBATCH --error=FAILURE_bcd_e%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH -c 8
-#SBATCH --mem=9G
+#SBATCH --mem=16G
 #SBATCH --partition=normal
 #####################################
 
@@ -29,4 +29,4 @@ export GUROBI_HOME="/share/software/user/restricted/gurobi/9.0.3_py36"
 lscpu
 
 # Run script
-julia sherlock_demo.jl 0 127 100 700 PSL 10
+julia sherlock_demo.jl 0 127 66 25 SOS 10 100000 100000 10
