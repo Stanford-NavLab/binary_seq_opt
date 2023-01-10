@@ -1,4 +1,4 @@
-"""
+#=
 # only need to run this once to install necessary packages
 import Pkg
 
@@ -12,7 +12,7 @@ Pkg.add("FFTW")
 Pkg.add("JuMP")
 Pkg.add("LinearOperators")
 Pkg.add("StatsBase")
-"""
+=#
 
 using Serialization, Dates
 
