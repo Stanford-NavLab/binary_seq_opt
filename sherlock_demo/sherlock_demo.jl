@@ -30,9 +30,9 @@ argnames = [
     ("max_iter", Int, 1000),
     ("patience", Int, 200),
     ("log_freq", Int, 1),
+    ("solver_procs", Int, 2),
     ("brute_force", Bool, false),
     ("max_columns", Int, typemax(Int)),
-    ("solver_procs", Int, 0),
     ("solver_time_limit", Float64, Inf),
 ]
 
