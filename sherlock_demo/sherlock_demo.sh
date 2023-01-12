@@ -29,4 +29,5 @@ export GUROBI_HOME="/share/software/user/restricted/gurobi/9.0.3_py36"
 lscpu
 
 # Run script
-julia sherlock_demo.jl 0 127 66 20 SOS 10 100000 100000 10 false
+julia sherlock_demo.jl 0 127 66 20 SOS 10 100000 100000 10 8 false
+# julia sherlock_demo.jl 0 1023 31 20 SOS 10 100000 100000 10 8 false
