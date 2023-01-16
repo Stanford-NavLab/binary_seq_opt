@@ -70,7 +70,7 @@ function pre(f::RandomSampler, X::Matrix{Int})
 end
 
 """ update with results, return true if terminated """
-function post(f::RandomSampler, 
+function post(f::IndexSelector, 
     new_objective::Float64, 
     index_list::Vector{Tuple{Int,Int}}
 )::Bool
@@ -82,7 +82,7 @@ end
 """ Generate log data """
 function generate_log(f::RandomSampler)
     log = Dict(
-        "index_selector_name" => "RandomSampler",
+        "index_selector_name" => f.name,
         "L" => f.L,
         "K" => f.K,
         "M" => f.M,

@@ -23,6 +23,8 @@ include("src/objectives/lpsl.jl")
 abstract type IndexSelector end
 include("src/index_selector/selector_data.jl")
 include("src/index_selector/random_selector.jl")
+include("src/index_selector/bist_selector.jl")
+include("src/index_selector/bist_extended_selector.jl")
 
 # block coordinate descent
 include("src/bcd.jl")
