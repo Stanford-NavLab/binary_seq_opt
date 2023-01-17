@@ -22,17 +22,15 @@ include("../binary_seq_opt.jl")
 nargs = length(ARGS)
 argnames = [
     ("seed", Int, 0),
-    ("L", Int, 31),
+    ("L", Int, 63),
     ("K", Int, 4),
-    ("M", Int, 7),
+    ("M", Int, 1),
     ("objective", String, "ISL"),
-    ("columnwise_limit", Int, typemax(Int)),
-    ("max_iter", Int, 1000),
-    ("patience", Int, 200),
+    ("max_iter", Int, 63 * 4),
     ("log_freq", Int, 1),
     ("solver_procs", Int, 2),
     ("brute_force", Bool, false),
-    ("max_columns", Int, typemax(Int)),
+    ("max_columns", Int, 2),
     ("solver_time_limit", Float64, Inf),
 ]
 
@@ -75,12 +73,11 @@ obj_sym = Symbol(args["objective"])
 objective = @eval $obj_sym
 
 # define index selector
-index_selector = RandomSampler(
-    args["L"], args["K"], args["M"]; 
-    columnwise_limit=args["columnwise_limit"], 
-    max_columns=args["max_columns"],
-    patience=args["patience"],
-)
+if M > 1
+    index_selector = BiST(args["L"], args["K"])
+else
+    index_selector = BiSTExtended(args["L"], args["K"], args["M"]; max_columns =  args["max_columns"])
+end
 
 # set up and run BCD solver
 bcd = BCD(index_selector, objective, solver; X0=X0,
