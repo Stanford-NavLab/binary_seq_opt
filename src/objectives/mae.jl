@@ -10,9 +10,9 @@ function MAE(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
         cross = hcat([
             real(ifft(FX[i] .* conj.(FX[j]))) for i = 1:K for j = i+1:K]...)
 
-        return mean(abs.(vcat(vec(auto), vec(cross))))
+        return sum(abs.(vcat(vec(auto), vec(cross))))
     else
-        return mean(abs.(auto))
+        return sum(abs.(auto))
     end
 end
 

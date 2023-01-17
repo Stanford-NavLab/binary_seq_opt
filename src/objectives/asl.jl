@@ -10,7 +10,7 @@ function ASL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
         cross = hcat([
             real(ifft(FX[i] .* conj.(FX[j]))) for i = 1:K for j = i+1:K]...)
 
-        return mean(
+        return sum(
             vcat(
                 2abs.(vec(auto)),
                 2abs.(vec(cross[1, :])),
@@ -18,7 +18,7 @@ function ASL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
             ),
         )
     else
-        return mean(2abs.(vec(auto)))
+        return sum(2abs.(vec(auto)))
     end
 end
 

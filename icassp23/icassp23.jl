@@ -73,7 +73,7 @@ obj_sym = Symbol(args["objective"])
 objective = @eval $obj_sym
 
 # define index selector
-if M > 1
+if args["M"] == 1
     index_selector = BiST(args["L"], args["K"])
 else
     index_selector = BiSTExtended(args["L"], args["K"], args["M"]; max_columns =  args["max_columns"])

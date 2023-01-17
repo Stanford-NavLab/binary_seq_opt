@@ -10,7 +10,7 @@ function ISL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
         cross = hcat([
             real(ifft(FX[i] .* conj.(FX[j]))) for i = 1:K for j = i+1:K]...)
 
-        return mean(
+        return sum(
             vcat(
                 2vec(auto) .^ 2,
                 2vec(cross[1, :]) .^ 2,
@@ -18,7 +18,7 @@ function ISL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
             ),
         )
     else
-        return mean(2vec(auto) .^ 2)
+        return sum(2vec(auto) .^ 2)
     end
 end
 

@@ -10,9 +10,9 @@ function SOS(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
         cross = hcat([
             real(ifft(FX[i] .* conj.(FX[j]))) for i = 1:K for j = i+1:K]...)
 
-        return mean(vcat(vec(auto) .^ 2, vec(cross) .^ 2))
+        return sum(vcat(vec(auto) .^ 2, vec(cross) .^ 2))
     else
-        return mean(vec(auto) .^ 2)
+        return sum(vec(auto) .^ 2)
     end
 end
 
