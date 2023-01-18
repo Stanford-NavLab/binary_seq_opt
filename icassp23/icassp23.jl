@@ -27,10 +27,11 @@ argnames = [
     ("M", Int, 1),
     ("objective", String, "ISL"),
     ("max_iter", Int, 63 * 4),
-    ("log_freq", Int, 1),
-    ("solver_procs", Int, 2),
-    ("brute_force", Bool, false),
+    ("patience", Int, 63 * 4),
     ("max_columns", Int, 2),
+    ("log_freq", Int, 1),
+    ("brute_force", Bool, false),
+    ("solver_procs", Int, 2),
     ("solver_time_limit", Float64, Inf),
 ]
 
@@ -51,7 +52,7 @@ if ~ispath(results_path)
 end
 
 # define solver
-if args["brute_force"]
+if args["brute_force"] || args["M"] <= 4
     solver = nothing
 else
     using Gurobi
@@ -76,7 +77,7 @@ objective = @eval $obj_sym
 if args["M"] == 1
     index_selector = BiST(args["L"], args["K"])
 else
-    index_selector = BiSTExtended(args["L"], args["K"], args["M"]; max_columns =  args["max_columns"])
+    index_selector = BiSTExtended(args["L"], args["K"], args["M"]; max_columns = args["max_columns"], patience=args["patience"])
 end
 
 # set up and run BCD solver

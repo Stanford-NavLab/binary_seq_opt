@@ -29,4 +29,4 @@ export GUROBI_HOME="/share/software/user/restricted/gurobi/9.0.3_py36"
 lscpu
 
 # Run script
-julia icassp23.jl 0 127 4 20 ISL 1000
+julia icassp23.jl 0 1023 4 1 ISL 100000 100000 4

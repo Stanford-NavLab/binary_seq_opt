@@ -13,7 +13,7 @@ struct BiSTExtended <: IndexSelector
     function BiSTExtended(L::Int, K::Int, M::Int;
         patience=K*L,
         max_columns::Int = 2,
-        columnwise_limit::Int = typemax(Int),
+        columnwise_limit::Int = L,
     )
         name = "BiSTExtended_$(L)_$(K)_$(M)_$(max_columns)_$(columnwise_limit)"
         new(name, L, K, M, max_columns, columnwise_limit,

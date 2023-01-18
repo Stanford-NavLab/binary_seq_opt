@@ -16,7 +16,7 @@ struct RandomSampler <: IndexSelector
         max_columns::Int = K,
         boost_col_probs::Bool = false,
     )
-        name = "RandomSampler_$(L)_$(K)_$(M)"
+        name = "RandomSampler_$(L)_$(K)_$(M)_$(columnwise_limit)_$(max_columns)"
         new(name, L, K, M, columnwise_limit, max_columns,
             patience, SelectorData(L, K), boost_col_probs)
     end
