@@ -5,6 +5,7 @@ struct BCD{I,O,S,D}
     X::Matrix{Int}
     X_best::Matrix{Int}
     obj_best::Vector{Float64}
+    iteration_times::Vector{Float64}
     index_selector::I
     objective::O
     solver::S
@@ -34,6 +35,7 @@ struct BCD{I,O,S,D}
             copy(X0),
             copy(X0),
             [objective(X0)],
+            Vector{Float64}([]),
             index_selector,
             objective,
             solver,
@@ -51,8 +53,9 @@ end
 function (f::BCD)(T::Int; verbose::Bool = true)
     for t=1:T
         # perform BCD step
-        stop, obj_val = step(f, t)
+        stop, obj_val, elapsed_time = step(f, t)
         push!(f.obj_values, obj_val)
+        push!(f.iteration_times, elapsed_time)
         log!(f, t)
 
         # update best, if not using a descent method
@@ -75,12 +78,14 @@ end
 function step(f::BCD, t::Int)
     index_list = pre(f.index_selector, f.X)
 
+    start = time()
     Xnew = solve_bcd_subproblem(t, f.X, index_list, f.objective, f.solver, f.stop_if_improved, f.disallow_shifts)
+    elapsed = time() - start
     new_obj = f.objective(Xnew)
     f.X .= Xnew
 
     stop = post(f.index_selector, new_obj, index_list)
-    return stop, new_obj
+    return stop, new_obj, elapsed
 end
 
 """ write log to file """
