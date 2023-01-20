@@ -6,6 +6,7 @@ struct BCD{I,O,S,D}
     X_best::Matrix{Int}
     obj_best::Vector{Float64}
     iteration_times::Vector{Float64}
+    subset_sizes::Vector{Int}
     index_selector::I
     objective::O
     solver::S
@@ -36,6 +37,7 @@ struct BCD{I,O,S,D}
             copy(X0),
             [objective(X0)],
             Vector{Float64}([]),
+            Vector{Int}([]),
             index_selector,
             objective,
             solver,
@@ -77,6 +79,7 @@ end
 """ Select indices, perform optimization, update data """
 function step(f::BCD, t::Int)
     index_list = pre(f.index_selector, f.X)
+    push!(f.subset_sizes, length(index_list))
 
     start = time()
     Xnew = solve_bcd_subproblem(t, f.X, index_list, f.objective, f.solver, f.stop_if_improved, f.disallow_shifts)

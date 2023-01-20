@@ -61,7 +61,7 @@ else
         "Threads" => args["solver_procs"],
         "TimeLimit" => args["solver_time_limit"],
         "OutputFlag" => 1,
-        "MIPGap" => 1e-10,
+        "MIPGap" => 1e-12,
     )
 end
 

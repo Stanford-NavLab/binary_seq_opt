@@ -10,15 +10,17 @@ struct RandomSampler <: IndexSelector
     patience::Int
     data::SelectorData
     boost_col_probs::Bool
+    randomize_M::Bool
     function RandomSampler(L::Int, K::Int, M::Int; 
         patience=typemax(Int), 
         columnwise_limit::Int = typemax(Int),
         max_columns::Int = K,
         boost_col_probs::Bool = false,
+        randomize_M::Bool = true,
     )
         name = "RandomSampler_$(L)_$(K)_$(M)_$(columnwise_limit)_$(max_columns)"
         new(name, L, K, M, columnwise_limit, max_columns,
-            patience, SelectorData(L, K), boost_col_probs)
+            patience, SelectorData(L, K), boost_col_probs, randomize_M)
     end
 end
 
@@ -27,7 +29,8 @@ function pre(f::RandomSampler, X::Matrix{Int})
     column_set = Set{Int}()
     inds = Dict{Int,Vector{Int}}(i => collect(1:f.L) for i=1:f.K)
     index_list = Vector{Tuple{Int,Int}}()
-    for _=1:f.M
+    M = rand(1:f.M)
+    for _=1:M
         cols = [k for (k, s) in inds if length(s) > f.L - f.columnwise_limit]
 
         # boost probability of columns with peak correlation values

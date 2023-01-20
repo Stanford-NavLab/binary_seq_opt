@@ -10,14 +10,16 @@ struct BiSTExtended <: IndexSelector
     patience::Int
     data::SelectorData
     prev_visited::Vector{Tuple{Int,Int}}
+    randomize_M::Bool
     function BiSTExtended(L::Int, K::Int, M::Int;
         patience=K*L,
         max_columns::Int = 2,
         columnwise_limit::Int = L,
+        randomize_M::Bool = true,
     )
         name = "BiSTExtended_$(L)_$(K)_$(M)_$(max_columns)_$(columnwise_limit)"
         new(name, L, K, M, max_columns, columnwise_limit,
-            patience, SelectorData(L, K), Vector{Tuple{Int,Int}}([(0, 1)]))
+            patience, SelectorData(L, K), Vector{Tuple{Int,Int}}([(0, 1)]), randomize_M)
     end
 end
 
@@ -27,7 +29,8 @@ function pre(f::BiSTExtended, X::Matrix{Int})
     column_set = Set{Int}()
     inds = Dict{Int,Vector{Int}}(i => collect(1:f.L) for i=1:f.K)
     index_list = Vector{Tuple{Int,Int}}()
-    for m=1:f.M
+    M = rand(1:f.M)
+    for m=1:M
         if m == 1
             # BiST sequential indices
             i_prev, j_prev = f.prev_visited[end]
