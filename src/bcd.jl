@@ -98,6 +98,7 @@ function log!(f::BCD, t::Int)
             "X" => f.X,
             "X0" => f.X0,
             "obj_values" => f.obj_values,
+            "iteration_times" => f.iteration_times,
             "log_path" => f.log_path,
             "log_name" => f.log_name,
             "log_freq" => f.log_freq,
