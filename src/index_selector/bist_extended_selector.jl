@@ -20,7 +20,7 @@ struct BiSTExtended <: IndexSelector
         columnwise_limit::Int = L,
         randomize_M::Bool = true,
     )
-        name = "BiSTExtended_$(L)_$(K)_$(M)_$(max_columns)_$(columnwise_limit)"
+        name = "BiSTExtended_$(L)_$(K)_$(M)_$(max_columns)_$(columnwise_limit)_$(randomize_M)"
         new(
             name,
             L,
