@@ -42,7 +42,7 @@ function pre(f::BiSTExtended, X::Matrix{Int})
     column_set = Set{Int}()
     inds = Dict{Int,Vector{Int}}(i => collect(1:f.L) for i = 1:f.K)
     index_list = Vector{Tuple{Int,Int}}()
-    M = rand(1:f.M)
+    M = f.randomize_M ? rand(1:f.M) : f.M
     for m = 1:M
         if m == 1
             # BiST sequential indices

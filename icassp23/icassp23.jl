@@ -27,11 +27,12 @@ argnames = [
     ("K", Int, 4),
     ("M", Int, 1),
     ("objective", String, "SOS"),
+    ("randomize_M", Bool, false),
     ("max_iter", Int, 63 * 4),
     ("patience", Int, 63 * 4),
+    ("brute_force", Bool, false),
     ("max_columns", Int, 2),
     ("log_freq", Int, 1),
-    ("brute_force", Bool, false),
     ("solver_procs", Int, 2),
     ("solver_time_limit", Float64, Inf),
 ]
@@ -90,6 +91,7 @@ else
         args["M"];
         max_columns = args["max_columns"],
         patience = args["patience"],
+        randomize_M = args["randomize_M"],
     )
 end
 
