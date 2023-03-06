@@ -29,13 +29,13 @@ export GUROBI_HOME="/share/software/user/restricted/gurobi/9.0.3_py36"
 lscpu
 
 # Run script
-julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_34_57_3457.jls 64 4 20 SOS false 256 256 false
-# julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_35_14_3514.jls 64 4 20 SOS false 256 256 false
-# julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_35_33_3533.jls 64 4 20 SOS false 256 256 false
-# julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_35_50_3550.jls 64 4 20 SOS false 256 256 false
-# julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_36_08_368.jls 64 4 20 SOS false 256 256 false
-# julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_36_26_3626.jls 64 4 20 SOS false 256 256 false
-# julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_36_43_3643.jls 64 4 20 SOS false 256 256 false
-# julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_37_01_371.jls 64 4 20 SOS false 256 256 false
-# julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_37_18_3718.jls 64 4 20 SOS false 256 256 false
-# julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_37_36_3736.jls 64 4 20 SOS false 256 256 false
+julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_34_57_3457.jls 64 4 20 SOS false 100000 256 false
+julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_35_14_3514.jls 64 4 20 SOS false 100000 256 false
+julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_35_33_3533.jls 64 4 20 SOS false 100000 256 false
+julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_35_50_3550.jls 64 4 20 SOS false 100000 256 false
+julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_36_08_368.jls 64 4 20 SOS false 100000 256 false
+julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_36_26_3626.jls 64 4 20 SOS false 100000 256 false
+julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_36_43_3643.jls 64 4 20 SOS false 100000 256 false
+julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_37_01_371.jls 64 4 20 SOS false 100000 256 false
+julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_37_18_3718.jls 64 4 20 SOS false 100000 256 false
+julia icassp23.jl 0 ../results/BCD-SOS-BiST_64_4-14_37_36_3736.jls 64 4 20 SOS false 100000 256 false

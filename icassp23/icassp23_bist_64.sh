@@ -29,13 +29,13 @@ export GUROBI_HOME="/share/software/user/restricted/gurobi/9.0.3_py36"
 lscpu
 
 # Run script
-julia icassp23.jl 0 "" 64 4 1 SOS false 256 256 true
-julia icassp23.jl 1 "" 64 4 1 SOS false 256 256 true
-julia icassp23.jl 2 "" 64 4 1 SOS false 256 256 true
-julia icassp23.jl 3 "" 64 4 1 SOS false 256 256 true
-julia icassp23.jl 4 "" 64 4 1 SOS false 256 256 true
-julia icassp23.jl 5 "" 64 4 1 SOS false 256 256 true
-julia icassp23.jl 6 "" 64 4 1 SOS false 256 256 true
-julia icassp23.jl 7 "" 64 4 1 SOS false 256 256 true
-julia icassp23.jl 8 "" 64 4 1 SOS false 256 256 true
-julia icassp23.jl 9 "" 64 4 1 SOS false 256 256 true
+julia icassp23.jl 0 "" 64 4 1 SOS false 100000 256 true
+julia icassp23.jl 1 "" 64 4 1 SOS false 100000 256 true
+julia icassp23.jl 2 "" 64 4 1 SOS false 100000 256 true
+julia icassp23.jl 3 "" 64 4 1 SOS false 100000 256 true
+julia icassp23.jl 4 "" 64 4 1 SOS false 100000 256 true
+julia icassp23.jl 5 "" 64 4 1 SOS false 100000 256 true
+julia icassp23.jl 6 "" 64 4 1 SOS false 100000 256 true
+julia icassp23.jl 7 "" 64 4 1 SOS false 100000 256 true
+julia icassp23.jl 8 "" 64 4 1 SOS false 100000 256 true
+julia icassp23.jl 9 "" 64 4 1 SOS false 100000 256 true
