@@ -7,7 +7,7 @@ struct BiST <: IndexSelector
     M::Int
     patience::Int
     data::SelectorData
-    function BiST(L::Int, K::Int; patience=K*L)
+    function BiST(L::Int, K::Int; patience = K * L)
         name = "BiST_$(L)_$(K)"
         new(name, L, K, 1, patience, SelectorData(L, K))
     end
@@ -29,13 +29,13 @@ function pre(f::BiST, X::Matrix{Int})
     if j == f.K + 1
         j = 1
     end
-    return Vector{Tuple{Int,Int}}([(i,j)])
+    return Vector{Tuple{Int,Int}}([(i, j)])
 end
 
 """ Generate log data """
 function generate_log(f::BiST)
     log = Dict(
-        "index_selector_name" =>f.name,
+        "index_selector_name" => f.name,
         "L" => f.L,
         "K" => f.K,
         "patience" => f.patience,

@@ -17,21 +17,23 @@ struct BCD{I,O,S,D}
     log_name::String
     log_freq::Int
     function BCD(
-        index_selector::IndexSelector, 
+        index_selector::IndexSelector,
         objective::Function,
         solver;
-        X0::Matrix{Int}=randb(index_selector.L, index_selector.K),
+        X0::Matrix{Int} = randb(index_selector.L, index_selector.K),
         stop_if_improved::Bool = false,
         disallow_shifts::Bool = false,
-        log_path::String="", 
-        log_name::String="BCD-"* string(objective) * "-" * index_selector.name * "-" * Dates.format(now(), "HH_MM_SS_MS") * ".jls",
-        log_freq::Int=1,
+        log_path::String = "",
+        log_name::String = "BCD-" *
+                           string(objective) *
+                           "-" *
+                           index_selector.name *
+                           "-" *
+                           Dates.format(now(), "HH_MM_SS_MS") *
+                           ".jls",
+        log_freq::Int = 1,
     )
-        new{typeof(index_selector),
-            typeof(objective),
-            typeof(solver),
-            typeof(log)
-        }(
+        new{typeof(index_selector),typeof(objective),typeof(solver),typeof(log)}(
             X0,
             copy(X0),
             copy(X0),
@@ -53,7 +55,7 @@ end
 
 """ run BCD """
 function (f::BCD)(T::Int; verbose::Bool = true)
-    for t=1:T
+    for t = 1:T
         # perform BCD step
         stop, obj_val, elapsed_time = step(f, t)
         push!(f.obj_values, obj_val)
@@ -82,7 +84,15 @@ function step(f::BCD, t::Int)
     push!(f.subset_sizes, length(index_list))
 
     start = time()
-    Xnew = solve_bcd_subproblem(t, f.X, index_list, f.objective, f.solver, f.stop_if_improved, f.disallow_shifts)
+    Xnew = solve_bcd_subproblem(
+        t,
+        f.X,
+        index_list,
+        f.objective,
+        f.solver,
+        f.stop_if_improved,
+        f.disallow_shifts,
+    )
     elapsed = time() - start
     new_obj = f.objective(Xnew)
     f.X .= Xnew

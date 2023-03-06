@@ -7,17 +7,15 @@ struct SelectorData
     total_visits::Matrix{Int}
     prev_visited::Vector{Tuple{Int,Int}}
     function SelectorData(L::Int, K::Int)
-        new([0], zeros(Int, K), [Inf], zeros(Int, L, K), 
-            Vector{Tuple{Int,Int}}()
-        )
+        new([0], zeros(Int, K), [Inf], zeros(Int, L, K), Vector{Tuple{Int,Int}}())
     end
 end
 
 """ Update data with index list and new objective value """
 function update!(
-    f::SelectorData, 
-    new_objective::Float64, 
-    index_list::Vector{Tuple{Int,Int}}
+    f::SelectorData,
+    new_objective::Float64,
+    index_list::Vector{Tuple{Int,Int}},
 )
     columns = sort(collect(Set([j for (_, j) in index_list])))
     if new_objective < f.best_objective[1]

@@ -38,11 +38,12 @@ function solve_bcd_subproblem(
             frows = prob_data.fixed_rows[j]
             Xjk = X[:, j]
             for l = j:j
-                for k=(j==l ? (1:Int(floor(L/2))) : (0:L-1))
+                for k in (j == l ? (1:Int(floor(L / 2))) : (0:L-1))
                     Xlk = circshift(X[:, l], -k)
-                    @constraint(model, 
-                        sum([Xlk[i] * x[(i, j)] for i in vrows]) + 
-                        sum([Xlk[i] * Xjk[i] for i in frows]) <= L - 1
+                    @constraint(
+                        model,
+                        sum([Xlk[i] * x[(i, j)] for i in vrows]) + sum([Xlk[i] * Xjk[i] for i in frows]) <=
+                        L - 1
                     )
                 end
             end
@@ -59,21 +60,22 @@ function solve_bcd_subproblem(
 
     # correlations between fixed column j and variable column i at fixed indices
     function constant_corr_vector(i::Int, j::Int)
-        YSc = hcat([circshift(reverse(X[:, j]), k) 
-                    for k in prob_data.fixed_rows[i]]...)
+        YSc = hcat([circshift(reverse(X[:, j]), k) for k in prob_data.fixed_rows[i]]...)
         xsc = X[prob_data.fixed_rows[i], i]
         return YSc * xsc
     end
 
-    Y = Dict((i, j) => constant_corr_vector(i, j)
-        for i in prob_data.variable_cols for j in prob_data.fixed_cols
+    Y = Dict(
+        (i, j) => constant_corr_vector(i, j) for i in prob_data.variable_cols for
+        j in prob_data.fixed_cols
     )
 
     # build internal correlation expressions, populate with current values
-    @expression(model, corr[(i, j, k) in prob_data.correlation_set], 
-        (i, j, k) in prob_data.variable_correlation_set 
-        ? AffExpr(dot(X[:, i], circshift(X[:, j], k))) 
-        : AffExpr(Y[(i, j)][k + 1])
+    @expression(
+        model,
+        corr[(i, j, k) in prob_data.correlation_set],
+        (i, j, k) in prob_data.variable_correlation_set ?
+        AffExpr(dot(X[:, i], circshift(X[:, j], k))) : AffExpr(Y[(i, j)][k+1])
     )
 
     # correlation between columns i and j at shift k
@@ -103,13 +105,14 @@ function solve_bcd_subproblem(
         for i in prob_data.variable_cols
             for j in prob_data.fixed_cols
                 # create reduced Y matrix
-                Y = hcat([circshift(reverse(X[:, j]), k) 
-                          for k in prob_data.variable_rows[i]]...)
-                for k=0:L-1
+                Y = hcat(
+                    [circshift(reverse(X[:, j]), k) for k in prob_data.variable_rows[i]]...,
+                )
+                for k = 0:L-1
                     add_to_expression!(
-                        corr[(i, j, k)], 
-                        dot(Y[k + 1, :],
-                        [x[(l, i)] for l in prob_data.variable_rows[i]]))
+                        corr[(i, j, k)],
+                        dot(Y[k+1, :], [x[(l, i)] for l in prob_data.variable_rows[i]]),
+                    )
                 end
             end
         end

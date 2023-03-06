@@ -1,6 +1,6 @@
 
 # calculate objective for a given matrix
-function LPSL(X::Union{Matrix{Int},Adjoint{Int, Matrix{Int}}})
+function LPSL(X::Union{Matrix{Int},Adjoint{Int,Matrix{Int}}})
     return PSL(X)
 end
 

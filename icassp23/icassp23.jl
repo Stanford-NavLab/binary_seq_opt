@@ -22,10 +22,11 @@ include("../binary_seq_opt.jl")
 nargs = length(ARGS)
 argnames = [
     ("seed", Int, 0),
+    ("path", String, ""),
     ("L", Int, 63),
     ("K", Int, 4),
     ("M", Int, 1),
-    ("objective", String, "ISL"),
+    ("objective", String, "SOS"),
     ("max_iter", Int, 63 * 4),
     ("patience", Int, 63 * 4),
     ("max_columns", Int, 2),
@@ -65,9 +66,15 @@ else
     )
 end
 
-# generate initial code
-Random.seed!(args["seed"])
-X0 = randb(args["L"], args["K"])
+if args["path"] != ""
+    # load initial code from previous result
+    prev_data = deserialize(args["path"])
+    X0 = prev_data["X"]
+else
+    # generate initial code with random seed
+    Random.seed!(args["seed"])
+    X0 = randb(args["L"], args["K"])
+end
 
 # parse objective function
 obj_sym = Symbol(args["objective"])
@@ -77,11 +84,23 @@ objective = @eval $obj_sym
 if args["M"] == 1
     index_selector = BiST(args["L"], args["K"])
 else
-    index_selector = BiSTExtended(args["L"], args["K"], args["M"]; max_columns = args["max_columns"], patience=args["patience"])
+    index_selector = BiSTExtended(
+        args["L"],
+        args["K"],
+        args["M"];
+        max_columns = args["max_columns"],
+        patience = args["patience"],
+    )
 end
 
 # set up and run BCD solver
-bcd = BCD(index_selector, objective, solver; X0=X0,
-          log_path=results_path, log_freq=args["log_freq"])
+bcd = BCD(
+    index_selector,
+    objective,
+    solver;
+    X0 = X0,
+    log_path = results_path,
+    log_freq = args["log_freq"],
+)
 
 bcd(args["max_iter"])

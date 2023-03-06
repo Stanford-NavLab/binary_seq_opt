@@ -76,14 +76,22 @@ objective = @eval $obj_sym
 
 # define index selector
 index_selector = RandomSampler(
-    args["L"], args["K"], args["M"]; 
-    columnwise_limit=args["columnwise_limit"], 
-    max_columns=args["max_columns"],
-    patience=args["patience"],
+    args["L"],
+    args["K"],
+    args["M"];
+    columnwise_limit = args["columnwise_limit"],
+    max_columns = args["max_columns"],
+    patience = args["patience"],
 )
 
 # set up and run BCD solver
-bcd = BCD(index_selector, objective, solver; X0=X0,
-          log_path=results_path, log_freq=args["log_freq"])
+bcd = BCD(
+    index_selector,
+    objective,
+    solver;
+    X0 = X0,
+    log_path = results_path,
+    log_freq = args["log_freq"],
+)
 
 bcd(args["max_iter"])
