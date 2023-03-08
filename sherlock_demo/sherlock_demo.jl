@@ -25,7 +25,8 @@ argnames = [
     ("L", Int, 31),
     ("K", Int, 4),
     ("M", Int, 7),
-    ("objective", String, "ISL"),
+    ("objective", String, "SOS"),
+    ("randomize_M", Bool, true),
     ("columnwise_limit", Int, typemax(Int)),
     ("max_iter", Int, 1000),
     ("patience", Int, 200),
@@ -82,6 +83,7 @@ index_selector = RandomSampler(
     columnwise_limit = args["columnwise_limit"],
     max_columns = args["max_columns"],
     patience = args["patience"],
+    randomize_M = args["randomize_M"],
 )
 
 # set up and run BCD solver
