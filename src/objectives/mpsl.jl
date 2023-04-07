@@ -1,8 +1,10 @@
 
 # calculate objective for a given matrix
-function MPSL(X::Union{Matrix{Int},Adjoint{Int,Matrix{Int}}})
-    K = size(X)[2]
-    FX = [fft(X[:, k]) for k = 1:K]
+function MPSL(
+    X::Union{Matrix{Int},Adjoint{Int,Matrix{Int}}};
+    K = size(X)[2],
+    FX = [fft(X[:, k]) for k = 1:K],
+)
 
     auto = hcat([real(ifft(FX[k] .* conj.(FX[k])))[2:end] for k = 1:K]...)
     if K > 1

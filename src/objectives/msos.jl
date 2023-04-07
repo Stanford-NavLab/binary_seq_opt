@@ -1,8 +1,10 @@
 
 # calculate objective for a given matrix
-function MSOS(X::Union{Matrix{Int},Adjoint{Int,Matrix{Int}}})
-    K = size(X)[2]
-    FX = [fft(X[:, k]) for k = 1:K]
+function MSOS(
+    X::Union{Matrix{Int},Adjoint{Int,Matrix{Int}}};
+    K = size(X)[2],
+    FX = [fft(X[:, k]) for k = 1:K],
+)
 
     auto = hcat([real(ifft(FX[k] .* conj.(FX[k])))[2:end] for k = 1:K]...)
     if K > 1
@@ -102,7 +104,7 @@ function MSOS(
     )
     cross_terms = length(prob_data.crosscorrelation_set) + length(missing_cc)
 
-    @constraint(model, autocorrelation <= t * auto_terms)
-    @constraint(model, crosscorrelation <= t * cross_terms)
+    @constraint(model, autocorrelation / auto_terms <= t)
+    @constraint(model, crosscorrelation / cross_terms <= t)
     @objective(model, Min, t)
 end

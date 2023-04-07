@@ -1,7 +1,11 @@
 
 # calculate objective for a given matrix
-function LPSL(X::Union{Matrix{Int},Adjoint{Int,Matrix{Int}}})
-    return PSL(X)
+function LPSL(
+    X::Union{Matrix{Int},Adjoint{Int,Matrix{Int}}};
+    K = size(X)[2],
+    FX = [fft(X[:, k]) for k = 1:K],
+)
+    return PSL(X; K = K, FX = FX)
 end
 
 # form JuMP expression for objective, given correlations

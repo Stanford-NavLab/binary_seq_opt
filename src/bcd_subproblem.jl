@@ -153,13 +153,19 @@ function solve_bcd_subproblem(
     index_vec = [i + L * (j - 1) for (i, j) in index_list]
     best_obj = Inf
     best_X = copy(X)
-    J_curr = obj(X)
+
+    var_cols = Set([j for (_, j) in index_list])
+    FX = [fft(X[:, k]) for k = 1:K]
+    J_curr = obj(X, K = K, FX = FX)
     for i in ProgressBar(0:2^N-1)
         s = bitstring(i)[end-N+1:end]
         x_temp = vec(copy(X))
         x_temp[index_vec] = [2 * Int(b == '1') - 1 for b in s]
         X_temp = reshape(x_temp, (L, K))
-        J = obj(X_temp)
+        for col in var_cols
+            FX[col] = fft(X_temp[:, col])
+        end
+        J = obj(X_temp, K = K, FX = FX)
         if J < best_obj
             best_X .= X_temp
             best_obj = J
