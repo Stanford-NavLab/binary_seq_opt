@@ -12,6 +12,7 @@ include("src/bcd_subproblem.jl")
 # load objective functions
 include("src/objectives/isl.jl")
 include("src/objectives/sos.jl")
+include("src/objectives/msos.jl")
 include("src/objectives/asl.jl")
 include("src/objectives/mae.jl")
 include("src/objectives/psl.jl")
