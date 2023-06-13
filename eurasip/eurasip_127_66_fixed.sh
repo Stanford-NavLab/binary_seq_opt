@@ -1,11 +1,11 @@
 #!/bin/bash
 ############################## Submit Job in Julia ######################################
 #SBATCH --time=48:00:00
-#SBATCH --job-name="bcd_icassp23"
+#SBATCH --job-name="bcd_eurasip"
 #SBATCH --mail-user=yalan@stanford.edu
 #SBATCH --mail-type=END
-#SBATCH --output=bcd_icassp23_e%j.txt
-#SBATCH --error=FAILURE_bcd_icassp23_e%j.txt
+#SBATCH --output=bcd_eurasip_e%j.txt
+#SBATCH --error=FAILURE_bcd_eurasip_e%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH -c 8
@@ -18,7 +18,7 @@ module load julia
 module load gurobi
 
 # Change to the directory of script
-export SLURM_SUBMIT_DIR=/home/users/yalan/binary_seq_opt/icassp23
+export SLURM_SUBMIT_DIR=/home/users/yalan/binary_seq_opt/eurasip
 
 # Change to the job directory
 cd $SLURM_SUBMIT_DIR
