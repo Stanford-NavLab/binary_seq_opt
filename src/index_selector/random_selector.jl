@@ -43,6 +43,9 @@ function pre(f::RandomSampler, X::Matrix{Int})
     inds = Dict{Int,Vector{Int}}(i => collect(1:f.L) for i = 1:f.K)
     index_list = Vector{Tuple{Int,Int}}()
     M = f.randomize_M ? rand(1:f.M) : f.M
+    if M == size(X)[1] * size(X)[2]
+        return [(i, j) for i = 1:size(X)[1] for j = 1:size(X)[2]]
+    end
     for _ = 1:M
         cols = [k for (k, s) in inds if length(s) > f.L - f.columnwise_limit]
 
