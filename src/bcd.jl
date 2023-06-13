@@ -63,7 +63,7 @@ function (f::BCD)(T::Int; verbose::Bool = true)
         log!(f, t)
 
         # update best, if not using a descent method
-        if obj_val < f.obj_best[1]
+        if obj_val <= f.obj_best[1]
             f.obj_best .= obj_val
             f.X_best .= copy(f.X)
         end
