@@ -82,18 +82,15 @@ obj_sym = Symbol(args["objective"])
 objective = @eval $obj_sym
 
 # define index selector
-if args["M"] == 1
-    index_selector = BiST(args["L"], args["K"])
-else
-    index_selector = BiSTExtended(
-        args["L"],
-        args["K"],
-        args["M"];
-        max_columns = args["max_columns"],
-        patience = args["patience"],
-        randomize_M = args["randomize_M"],
-    )
-end
+index_selector = RandomSampler(
+    args["L"],
+    args["K"],
+    args["M"];
+    columnwise_limit = args["columnwise_limit"],
+    max_columns = args["max_columns"],
+    patience = args["patience"],
+    randomize_M = args["randomize_M"],
+)
 
 # set up and run BCD solver
 bcd = BCD(
