@@ -30,7 +30,7 @@ function SOS(
             model,
             J,
             sum([
-                ((i == j && k == Int(prob_data.L / 2)) ? 2 : 1) * model[:corr][(i, j, k)]^2
+                ((i == j && k != Int(prob_data.L / 2)) ? 2 : 1) * model[:corr][(i, j, k)]^2
                 for (i, j, k) in prob_data.correlation_set
             ])
         )
@@ -57,8 +57,13 @@ function ACZSOS(
     K = size(X)[2],
     FX = [fft(X[:, k]) for k = 1:K],
 )
-
+    weight = size(X)[1]
     auto = hcat([real(ifft(FX[k] .* conj.(FX[k])))[2:end] for k = 1:K]...)
+    if size(X)[1] % 2 == 0
+        auto[1, :] = sqrt(weight) * auto[1, :]
+    else
+        auto[1, :] = sqrt(weight) * (auto[1, :] .+ 1)
+    end
     if K > 1
         cross = hcat([real(ifft(FX[i] .* conj.(FX[j]))) for i = 1:K for j = i+1:K]...)
 
@@ -76,13 +81,14 @@ function ACZSOS(
     X::Matrix{Int},
     stop_if_improved::Bool,
 )
+    weight = prob_data.L
     if prob_data.L % 2 == 0
         # even length: double autocorrelations except at shift L / 2
         @expression(
             model,
             J,
             sum([
-                (abs(mod(k, prob_data.L)) == 1 && i == j ? prob_data.L : 1) * ((i == j && k == Int(prob_data.L / 2)) ? 2 : 1) * model[:corr][(i, j, k)]^2
+                (abs(mod(k, prob_data.L)) == 1 && i == j ? weight : 1) * ((i == j && k != Int(prob_data.L / 2)) ? 2 : 1) * model[:corr][(i, j, k)]^2
                 for (i, j, k) in prob_data.correlation_set
             ])
         )
@@ -92,7 +98,7 @@ function ACZSOS(
             model,
             J,
             sum([
-                (i == j ? 2 : 1) * (abs(mod(k, prob_data.L)) == 1 && i == j ? prob_data.L * (model[:corr][(i, j, k)] + 1)^2 : model[:corr][(i, j, k)]^2)
+                (i == j ? 2 : 1) * (abs(mod(k, prob_data.L)) == 1 && i == j ? weight * (model[:corr][(i, j, k)] + 1)^2 : model[:corr][(i, j, k)]^2)
                 for (i, j, k) in prob_data.correlation_set
             ])
         )
@@ -131,7 +137,7 @@ function SOS_LCZ_5(
     stop_if_improved::Bool,
 )
     lcz_width = Int(ceil(size(X)[1] * 5 / 100))
-    selected_corr_set = [(i, j, k) for (i, j, k) in prob_data.correlation_set if k < lcz_width]
+    selected_corr_set = [(i, j, k) for (i, j, k) in prob_data.correlation_set if abs(mod(k, prob_data.L)) < lcz_width]
 
     if prob_data.L % 2 == 0
         # even length: double autocorrelations except at shift L / 2
@@ -139,7 +145,7 @@ function SOS_LCZ_5(
             model,
             J,
             sum([
-                ((i == j && k == Int(prob_data.L / 2)) ? 2 : 1) * model[:corr][(i, j, k)]^2
+                model[:corr][(i, j, k)]^2
                 for (i, j, k) in selected_corr_set
             ])
         )
