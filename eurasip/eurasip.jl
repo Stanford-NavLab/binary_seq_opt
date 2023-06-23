@@ -32,6 +32,8 @@ argnames = [
     ("patience", Int, 10^6),
     ("brute_force", Bool, false),
     ("max_columns", Int, 66),
+    ("columnwise_limit", Int, 10^6),
+    ("boost_col_probs", Bool, false),
     ("log_freq", Int, 1),
     ("solver_procs", Int, 2),
     ("solver_time_limit", Float64, Inf),
@@ -90,6 +92,7 @@ index_selector = RandomSampler(
     max_columns = args["max_columns"],
     patience = args["patience"],
     randomize_M = args["randomize_M"],
+    boost_col_probs= args["boost_col_probs"],
 )
 
 # set up and run BCD solver

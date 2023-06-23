@@ -1,3 +1,4 @@
+using StatsBase
 
 """ Select M random indices """
 struct RandomSampler <: IndexSelector
@@ -46,37 +47,34 @@ function pre(f::RandomSampler, X::Matrix{Int})
     if M == size(X)[1] * size(X)[2]
         return [(i, j) for i = 1:size(X)[1] for j = 1:size(X)[2]]
     end
+
+    # boost probability of columns with peak correlation values
+    if f.boost_col_probs
+        psl = PSL(X)
+        FX = [fft(X[:, k]) for k = 1:f.K]
+
+        # find columns achieving peak correlation level
+        boost_list = []
+        for i in [k for (k, _) in inds]
+            corrs = hcat([real(ifft(FX[i] .* conj.(FX[j]))) for j = i:f.K]...)
+            if any(abs.(corrs) .> psl - 0.5)
+                push!(boost_list, i)
+            end
+        end
+    end
+
     for _ = 1:M
         cols = [k for (k, s) in inds if length(s) > f.L - f.columnwise_limit]
 
-        # boost probability of columns with peak correlation values
-        if f.boost_col_probs
-            psl = PSL(X)
-            FX = [fft(X[:, k]) for k = 1:f.K]
-
-            # find columns achieving peak correlation level
-            boost_list = []
-            for i in cols
-                corrs = hcat([real(ifft(FX[i] .* conj.(FX[j]))) for j = i:f.K]...)
-                if any(abs.(corrs) .> psl - 0.5)
-                    push!(boost_list, i)
-                end
-            end
-
-            # boost probability of choosing those columns
-            append!(
-                cols,
-                vcat(
-                    [
-                        boost_list for
-                        _ = 1:Int(floor(length(cols) / max(1, length(boost_list))))
-                    ]...,
-                ),
-            )
-        end
-
         # sample index
-        j = rand(cols)
+        if f.boost_col_probs
+            scale = max(1, (length(cols) - length(boost_list)) / length(boost_list))
+            probs = [col in boost_list ? scale : 1 for col in cols]
+            probs = probs ./ sum(probs)
+            j = sample(cols, Weights(probs))
+        else
+            j = rand(cols)
+        end
         i = rand(1:length(inds[j]))
         push!(column_set, j)
         push!(index_list, (inds[j][i], j))
