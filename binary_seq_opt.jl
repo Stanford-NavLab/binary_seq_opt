@@ -4,6 +4,7 @@ using Distributed, Dates, Serialization
 
 include("src/utils.jl")
 include("src/gold_codes.jl")
+include("src/weil_codes.jl")
 
 # block coordinate descent core
 include("src/subproblem_data.jl")
