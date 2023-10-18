@@ -8,8 +8,8 @@
 #SBATCH --error=FAILURE_bcd_eurasip_e%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH -c 8
-#SBATCH --mem=24G
+#SBATCH -c 2
+#SBATCH --mem=32G
 #SBATCH --partition=normal
 #####################################
 
