@@ -173,6 +173,9 @@ function solve_bcd_subproblem(
         if stop_if_improved && J < J_curr
             return best_X
         end
+        clear!(:s)
+        clear!(:x_temp)
+        clear!(:X_temp)
     end
     return best_X
 end
