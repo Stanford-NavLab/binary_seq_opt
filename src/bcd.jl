@@ -116,8 +116,8 @@ function log!(f::BCD, t::Int)
             "log_name" => f.log_name,
             "log_freq" => f.log_freq,
         )
-        log = merge(bcd_log, selector_log)
-        serialize(joinpath(f.log_path, f.log_name), log)
-        clear!(:log)
+        write_log = merge(bcd_log, selector_log)
+        serialize(joinpath(f.log_path, f.log_name), write_log)
+        clear!(:write_log)
     end
 end
