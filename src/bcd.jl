@@ -118,5 +118,6 @@ function log!(f::BCD, t::Int)
         )
         log = merge(bcd_log, selector_log)
         serialize(joinpath(f.log_path, f.log_name), log)
+        clear!(:log)
     end
 end
