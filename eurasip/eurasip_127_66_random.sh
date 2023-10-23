@@ -29,4 +29,4 @@ export GUROBI_HOME="/share/software/user/restricted/gurobi/9.0.3_py36"
 lscpu
 
 # Run script
-julia eurasip.jl 0 "" 127 66 24 SOS true 1000000 1000000 false 3 8 false 100
+julia --heap-size-hint=16G eurasip.jl 0 "" 127 66 24 SOS true 1000000 1000000 false 3 8 false 100
