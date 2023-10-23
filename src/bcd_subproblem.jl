@@ -177,5 +177,7 @@ function solve_bcd_subproblem(
         clear!(:x_temp)
         clear!(:X_temp)
     end
+    clear!(:var_cols)
+    clear!(:FX)
     return best_X
 end
