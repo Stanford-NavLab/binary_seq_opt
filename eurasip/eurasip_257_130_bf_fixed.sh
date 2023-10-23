@@ -1,15 +1,15 @@
 #!/bin/bash
 ############################## Submit Job in Julia ######################################
 #SBATCH --time=48:00:00
-#SBATCH --job-name="127fix_eurasip"
+#SBATCH --job-name="257bffix_eurasip"
 #SBATCH --mail-user=yalan@stanford.edu
 #SBATCH --mail-type=END
-#SBATCH --output=127fix_eurasip_e%j.txt
-#SBATCH --error=FAILURE_127fix_eurasip_e%j.txt
+#SBATCH --output=257bffix_eurasip_e%j.txt
+#SBATCH --error=FAILURE_257bffix_eurasip_e%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH -c 4
-#SBATCH --mem=16G
+#SBATCH -c 1
+#SBATCH --mem=32G
 #SBATCH --partition=normal
 #####################################
 
@@ -29,4 +29,4 @@ export GUROBI_HOME="/share/software/user/restricted/gurobi/9.0.3_py36"
 lscpu
 
 # Run script
-julia eurasip.jl 0 "" 127 66 24 SOS false 1000000 1000000 false 3 8 false 100
+julia eurasip.jl 0 "" 257 130 4 SOS false 1000000 1000000 true 3 10 false 100
