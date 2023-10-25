@@ -69,11 +69,6 @@ else
     )
 end
 
-# override patience if M=1
-if args["M"] == 1
-    args["patience"] = args["L"] * args["K"]
-end
-
 if args["path"] != ""
     # load initial code from previous result
     prev_data = deserialize(args["path"])
