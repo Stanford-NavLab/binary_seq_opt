@@ -14,7 +14,6 @@ argnames = [
     ("num_cols_min", Int, 1),
     ("num_cols_step", Int, 1),
     ("num_cols_max", Int, 50),
-    ("brute_force", Bool, false),
     ("solver_procs", Int, 2),
     ("solver_time_limit", Float64, 30),
 ]
@@ -36,23 +35,18 @@ if ~ispath(results_path)
 end
 
 # define solver
-if args["brute_force"] || args["M"] <= 4
-    solver = nothing
-else
-    using Gurobi
-    solver = optimizer_with_attributes(
-        Gurobi.Optimizer,
-        "Threads" => args["solver_procs"],
-        "TimeLimit" => args["solver_time_limit"],
-        "OutputFlag" => 1,
-        "MIPGap" => 1e-12,
-    )
-end
+using Gurobi
+solver = optimizer_with_attributes(
+    Gurobi.Optimizer,
+    "Threads" => args["solver_procs"],
+    "TimeLimit" => args["solver_time_limit"],
+    "OutputFlag" => 1,
+    "MIPGap" => 1e-12,
+)
 
 # parse objective function
 obj_sym = Symbol(args["objective"])
 objective = @eval $obj_sym
-
 
 # run experiment
 results = Dict()
