@@ -69,10 +69,43 @@ else
     )
 end
 
+# override patience if M=1
+if args["M"] == 1
+    args["patience"] = args["L"] * args["K"]
+end
+
 if args["path"] != ""
     # load initial code from previous result
     prev_data = deserialize(args["path"])
     X0 = prev_data["X"]
+elseif args["objective"] == "ACZSOS"
+    # start with random code then optimize until ACZ condition satisfied
+    Random.seed!(args["seed"])
+    X0 = randb(args["L"], args["K"])
+
+    # run coordinate descent
+    index_selector = RandomSampler(
+        args["L"],
+        args["K"],
+        args["M"];
+        columnwise_limit = args["columnwise_limit"],
+        max_columns = args["max_columns"],
+        patience = args["patience"],
+        randomize_M = args["randomize_M"],
+        boost_col_probs= args["boost_col_probs"],
+    )
+
+    bcd = BCD(
+        index_selector,
+        ACZ,
+        solver;
+        X0 = X0,
+        min_obj_val = 0.0,
+        log_path = results_path,
+        log_freq = args["log_freq"],    
+    )
+    bcd(args["max_iter"])
+    X0 = bcd.X_best
 else
     # generate initial code with random seed
     Random.seed!(args["seed"])

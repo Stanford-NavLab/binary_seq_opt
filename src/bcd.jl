@@ -11,6 +11,7 @@ struct BCD{I,O,S,D}
     objective::O
     solver::S
     stop_if_improved::Bool
+    min_obj_val::Float64
     disallow_shifts::Bool
     obj_values::Vector{Float64}
     log_path::String
@@ -22,6 +23,7 @@ struct BCD{I,O,S,D}
         solver;
         X0::Matrix{Int} = randb(index_selector.L, index_selector.K),
         stop_if_improved::Bool = false,
+        min_obj_val=-Inf,
         disallow_shifts::Bool = false,
         log_path::String = "",
         log_name::String = "BCD-" *
@@ -44,6 +46,7 @@ struct BCD{I,O,S,D}
             objective,
             solver,
             stop_if_improved,
+            min_obj_val,
             disallow_shifts,
             zeros(0),
             log_path,
@@ -72,7 +75,7 @@ function (f::BCD)(T::Int; verbose::Bool = true)
             @printf "Iteration %d Objective: %f\n" t obj_val
         end
 
-        if stop
+        if stop || isapprox(obj_val+1, f.min_obj_val+1) || obj_val < f.min_obj_val
             break
         end
     end
