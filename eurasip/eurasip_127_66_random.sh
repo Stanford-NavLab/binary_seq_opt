@@ -9,7 +9,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH -c 4
-#SBATCH --mem=16G
+#SBATCH --mem=12G
 #SBATCH --partition=normal
 #####################################
 
@@ -29,4 +29,4 @@ export GUROBI_HOME="/share/software/user/restricted/gurobi/9.0.3_py36"
 lscpu
 
 # Run script
-julia --heap-size-hint=8G eurasip.jl 0 "" 127 66 24 SOS true 1000000 1000000 false 3 8 false 100
+julia --heap-size-hint=8G eurasip.jl 0 "" 127 66 25 SOS true 1000000 1000000 false 66 1 false 100

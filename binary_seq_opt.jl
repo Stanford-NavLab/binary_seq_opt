@@ -55,8 +55,8 @@ include("src/bcd.jl")
 #     X0 = randb(L, K)
 #     index_selector = RandomSampler(L, K, M)
 #     index_list = pre(index_selector)
-#     Xsolve = solve_bcd_subproblem(X0, index_list, obj, solver)
-#     Xbrute = solve_bcd_subproblem(X0, index_list, obj, nothing)
+#     Xsolve = solve_bcd_subproblem(X0, index_list, obj, solver)[1]
+#     Xbrute = solve_bcd_subproblem(X0, index_list, obj, nothing)[1]
 #     return obj(Xsolve) ≈ obj(Xbrute)
 # end
 # [@assert test_bcd(31, 13, 7, ISL) for _=1:1000]

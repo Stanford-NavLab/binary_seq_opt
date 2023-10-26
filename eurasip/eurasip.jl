@@ -78,17 +78,21 @@ elseif args["objective"] == "ACZSOS"
     Random.seed!(args["seed"])
     X0 = randb(args["L"], args["K"])
 
-    # run coordinate descent
-    index_selector = RandomSampler(
-        args["L"],
-        args["K"],
-        args["M"];
-        columnwise_limit = args["columnwise_limit"],
-        max_columns = args["max_columns"],
-        patience = args["patience"],
-        randomize_M = args["randomize_M"],
-        boost_col_probs= args["boost_col_probs"],
-    )
+    # run solver
+    if args["M"] > 1
+        index_selector = RandomSampler(
+            args["L"],
+            args["K"],
+            args["M"];
+            columnwise_limit = args["columnwise_limit"],
+            max_columns = args["max_columns"],
+            patience = args["patience"],
+            randomize_M = args["randomize_M"],
+            boost_col_probs= args["boost_col_probs"],
+        )
+    else
+        index_selector = BiST(args["L"], args["K"])
+    end
 
     bcd = BCD(
         index_selector,
@@ -112,16 +116,20 @@ obj_sym = Symbol(args["objective"])
 objective = @eval $obj_sym
 
 # define index selector
-index_selector = RandomSampler(
-    args["L"],
-    args["K"],
-    args["M"];
-    columnwise_limit = args["columnwise_limit"],
-    max_columns = args["max_columns"],
-    patience = args["patience"],
-    randomize_M = args["randomize_M"],
-    boost_col_probs= args["boost_col_probs"],
-)
+if args["M"] > 1
+    index_selector = RandomSampler(
+        args["L"],
+        args["K"],
+        args["M"];
+        columnwise_limit = args["columnwise_limit"],
+        max_columns = args["max_columns"],
+        patience = args["patience"],
+        randomize_M = args["randomize_M"],
+        boost_col_probs= args["boost_col_probs"],
+    )
+else
+    index_selector = BiST(args["L"], args["K"])
+end
 
 # set up and run BCD solver
 bcd = BCD(

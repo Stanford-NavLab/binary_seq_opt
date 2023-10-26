@@ -8,8 +8,8 @@
 #SBATCH --error=FAILURE_257cd_eurasip_257_e%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH -c 1
-#SBATCH --mem=16G
+#SBATCH -c 4
+#SBATCH --mem=8G
 #SBATCH --partition=normal
 #####################################
 
@@ -29,4 +29,4 @@ export GUROBI_HOME="/share/software/user/restricted/gurobi/9.0.3_py36"
 lscpu
 
 # Run script
-julia --heap-size-hint=8G eurasip.jl 0 "" 257 130 1 SOS true 1000000 1000000 true 130 1 false 100
+julia --heap-size-hint=4G eurasip.jl 0 "" 257 130 1 ACZSOS true 1000000 1000000 true 130 1 false 100

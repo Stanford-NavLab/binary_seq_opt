@@ -120,7 +120,7 @@ function solve_bcd_subproblem(
 
     # form objective and solve
     obj(model, prob_data, t, X, stop_if_improved)
-    optimize!(model)
+    solver_time = @elapsed optimize!(model)
 
     # return optimized matrix
     Xnew = copy(X)
@@ -135,7 +135,7 @@ function solve_bcd_subproblem(
     # end
     # @assert solution_summary(model).objective_value ≈ obj(Xnew)
 
-    return Xnew
+    return Xnew, solver_time
 end
 
 """ solve subproblem via brute force """
@@ -148,6 +148,7 @@ function solve_bcd_subproblem(
     stop_if_improved::Bool,
     disallow_shifts::Bool,
 )
+    start = time()
     L, K = size(X)
     N = length(index_list)
     index_vec = [i + L * (j - 1) for (i, j) in index_list]
@@ -179,5 +180,5 @@ function solve_bcd_subproblem(
     end
     clear!(:var_cols)
     clear!(:FX)
-    return best_X
+    return best_X, time() - start
 end

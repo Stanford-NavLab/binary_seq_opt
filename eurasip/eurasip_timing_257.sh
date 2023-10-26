@@ -9,7 +9,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH -c 2
-#SBATCH --mem=16G
+#SBATCH --mem=12G
 #SBATCH --partition=normal
 #####################################
 
@@ -24,5 +24,4 @@ export SLURM_SUBMIT_DIR=/home/users/yalan/binary_seq_opt/eurasip
 cd $SLURM_SUBMIT_DIR
 
 # Run script
-julia --heap-size-hint=8G timing.jl 0 257 130 24 SOS 10 1 1 50
-julia --heap-size-hint=8G timing.jl 0 127 66 24 SOS 10 1 1 50
+julia --heap-size-hint=8G timing.jl 0 257 130 25 SOS 10 1 1 66

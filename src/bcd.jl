@@ -6,6 +6,7 @@ struct BCD{I,O,S,D}
     X_best::Matrix{Int}
     obj_best::Vector{Float64}
     iteration_times::Vector{Float64}
+    solver_times::Vector{Float64}
     subset_sizes::Vector{Int}
     index_selector::I
     objective::O
@@ -41,6 +42,7 @@ struct BCD{I,O,S,D}
             copy(X0),
             [objective(X0)],
             Vector{Float64}([]),
+            Vector{Float64}([]),
             Vector{Int}([]),
             index_selector,
             objective,
@@ -60,9 +62,10 @@ end
 function (f::BCD)(T::Int; verbose::Bool = true)
     for t = 1:T
         # perform BCD step
-        stop, obj_val, elapsed_time = step(f, t)
+        stop, obj_val, elapsed_time, solver_time = step(f, t)
         push!(f.obj_values, obj_val)
         push!(f.iteration_times, elapsed_time)
+        push!(f.solver_times, solver_time)
         log!(f, t)
 
         # update best, if not using a descent method
@@ -87,7 +90,7 @@ function step(f::BCD, t::Int)
     push!(f.subset_sizes, length(index_list))
 
     start = time()
-    Xnew = solve_bcd_subproblem(
+    Xnew, solver_time = solve_bcd_subproblem(
         t,
         f.X,
         index_list,
@@ -101,7 +104,7 @@ function step(f::BCD, t::Int)
     f.X .= Xnew
 
     stop = post(f.index_selector, new_obj, index_list)
-    return stop, new_obj, elapsed
+    return stop, new_obj, elapsed, solver_time
 end
 
 """ write log to file """
@@ -115,12 +118,12 @@ function log!(f::BCD, t::Int)
             "X0" => f.X0,
             "obj_values" => f.obj_values,
             "iteration_times" => f.iteration_times,
+            "solver_times" => f.solver_times,
             "log_path" => f.log_path,
             "log_name" => f.log_name,
             "log_freq" => f.log_freq,
         )
         write_log = merge(bcd_log, selector_log)
         serialize(joinpath(f.log_path, f.log_name), write_log)
-        clear!(:write_log)
     end
 end
