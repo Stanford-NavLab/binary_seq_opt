@@ -9,7 +9,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH -c 2
-#SBATCH --mem=12G
+#SBATCH --mem=14G
 #SBATCH --partition=normal
 #####################################
 
