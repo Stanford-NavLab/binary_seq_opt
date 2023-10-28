@@ -43,7 +43,11 @@ function pre(f::RandomSampler, X::Matrix{Int})
     column_set = Set{Int}()
     inds = Dict{Int,Vector{Int}}(i => collect(1:f.L) for i = 1:f.K)
     index_list = Vector{Tuple{Int,Int}}()
+
+    # randomize M
     M = f.randomize_M ? rand(1:f.M) : f.M
+
+    # choose the entire index set
     if M == size(X)[1] * size(X)[2]
         return [(i, j) for i = 1:size(X)[1] for j = 1:size(X)[2]]
     end
@@ -88,6 +92,14 @@ function pre(f::RandomSampler, X::Matrix{Int})
         end
     end
     return index_list
+
+    # # first sample maximum columns and rows
+    # cols = randperm(f.K)[1:f.max_columns]
+    # index_list = vcat([
+    #     [(i, j) for i in randperm(f.L)[1:f.columnwise_limit]]
+    #     for j in cols
+    # ]...)
+    # return sample(index_list, M, replace = false)
 end
 
 """ update with results, return true if terminated """

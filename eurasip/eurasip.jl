@@ -33,7 +33,6 @@ argnames = [
     ("brute_force", Bool, false),
     ("max_columns", Int, 66),
     ("columnwise_limit", Int, 1),
-    ("boost_col_probs", Bool, true),
     ("log_freq", Int, 1),
     ("solver_procs", Int, 2),
     ("solver_time_limit", Float64, Inf),
@@ -73,13 +72,14 @@ if args["path"] != ""
     # load initial code from previous result
     prev_data = deserialize(args["path"])
     X0 = prev_data["X"]
+
 elseif args["objective"] == "ACZSOS"
     # start with random code then optimize until ACZ condition satisfied
     Random.seed!(args["seed"])
     X0 = randb(args["L"], args["K"])
 
     # run solver
-    if args["M"] > 1
+    if args["M"] >= 1
         index_selector = RandomSampler(
             args["L"],
             args["K"],
@@ -88,7 +88,6 @@ elseif args["objective"] == "ACZSOS"
             max_columns = args["max_columns"],
             patience = args["patience"],
             randomize_M = args["randomize_M"],
-            boost_col_probs= args["boost_col_probs"],
         )
     else
         index_selector = BiST(args["L"], args["K"])
@@ -105,6 +104,8 @@ elseif args["objective"] == "ACZSOS"
     )
     bcd(args["max_iter"])
     X0 = bcd.X_best
+    @assert ACZ(X0) == 0.0
+
 else
     # generate initial code with random seed
     Random.seed!(args["seed"])
@@ -116,7 +117,7 @@ obj_sym = Symbol(args["objective"])
 objective = @eval $obj_sym
 
 # define index selector
-if args["M"] > 1
+if args["M"] >= 1
     index_selector = RandomSampler(
         args["L"],
         args["K"],
@@ -125,7 +126,6 @@ if args["M"] > 1
         max_columns = args["max_columns"],
         patience = args["patience"],
         randomize_M = args["randomize_M"],
-        boost_col_probs= args["boost_col_probs"],
     )
 else
     index_selector = BiST(args["L"], args["K"])
