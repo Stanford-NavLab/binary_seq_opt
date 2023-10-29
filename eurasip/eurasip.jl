@@ -100,7 +100,7 @@ elseif args["objective"] == "ACZSOS"
         X0 = X0,
         min_obj_val = args["L"] % 2 == 0 ? 0.0 : args["K"],
         log_path = results_path,
-        log_freq = args["log_freq"],    
+        log_freq = 1,    
     )
     bcd(args["max_iter"])
     X0 = bcd.X_best
