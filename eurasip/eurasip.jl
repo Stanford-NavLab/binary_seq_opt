@@ -98,7 +98,7 @@ elseif args["objective"] == "ACZSOS"
         ACZ,
         solver;
         X0 = X0,
-        min_obj_val = 0.0,
+        min_obj_val = args["L"] % 2 == 0 ? 0.0 : args["K"],
         log_path = results_path,
         log_freq = args["log_freq"],    
     )

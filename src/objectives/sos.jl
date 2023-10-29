@@ -63,7 +63,7 @@ function ACZSOS(
     # else
     #     auto[1, :] = sqrt(weight) * (auto[1, :] .+ 1)
     # end
-    if !all(isapprox.(auto[1, :], (size(X)[1] % 2 == 0 ? 0 : -1)))
+    if !all(isapprox.(abs.(auto[1, :]), (size(X)[1] % 2 == 0 ? 0 : 1)))
         return Inf
     end
     if K > 1
@@ -86,7 +86,8 @@ function ACZSOS(
     # weight = prob_data.L
     for (i, k) in prob_data.autocorrelation_set
         if abs(mod(k, prob_data.L)) == 1
-            @constraint(model, model[:corr][(i, i, k)] == (prob_data.L % 2 == 0 ? 0 : -1))
+            @constraint(model, model[:corr][(i, i, k)] <= (prob_data.L % 2 == 0 ? 0 : 1))
+            @constraint(model, model[:corr][(i, i, k)] >= (prob_data.L % 2 == 0 ? 0 : -1))
         end
     end
 

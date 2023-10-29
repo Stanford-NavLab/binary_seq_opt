@@ -6,7 +6,7 @@ function ACZ(
     FX = [fft(X[:, k]) for k = 1:K],
 )
     auto = hcat([real(ifft(FX[k] .* conj.(FX[k])))[2] for k = 1:K]...)
-    return sum(vec(auto .- (size(X)[1] % 2 == 0 ? 0 : -1)) .^ 2)
+    return sum(vec(auto) .^ 2)
 end
 
 # form JuMP expression for objective, given correlations
