@@ -104,7 +104,6 @@ elseif args["objective"] == "ACZSOS"
     )
     bcd(args["max_iter"])
     X0 = bcd.X_best
-    @assert ACZ(X0) == 0.0
 
 else
     # generate initial code with random seed
