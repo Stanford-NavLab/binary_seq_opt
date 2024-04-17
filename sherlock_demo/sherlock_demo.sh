@@ -9,7 +9,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH -c 4
-#SBATCH --mem=64G
+#SBATCH --mem=8G
 #SBATCH --partition=normal
 #####################################
 
@@ -29,5 +29,6 @@ export GUROBI_HOME="/share/software/user/restricted/gurobi/10.0.1_py39"
 lscpu
 
 # Run script
-# julia sherlock_demo.jl 0 127 66 20 SOS 10 100000 100000 10 8 false
-julia sherlock_demo.jl 0 1023 31 15 MSOS false 5 100000 100000 10 2 false 3
+# julia --heap-size-hint=4G sherlock_demo.jl 0 127 66 20 SOS 10 100000 100000 10 8 false
+julia --heap-size-hint=8G sherlock_demo.jl 0 1023 31 15 MSOS false 5 100000 100000 10 2 false 3 true
+julia --heap-size-hint=8G sherlock_demo.jl 0 1023 31 15 SOS false 5 100000 100000 10 2 false 3 true
