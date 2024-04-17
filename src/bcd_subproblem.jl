@@ -19,6 +19,7 @@ function solve_bcd_subproblem(
     solver,
     stop_if_improved::Bool,
     disallow_shifts::Bool,
+    balanced::Bool,
 )
     L, K = size(X)
 
@@ -46,6 +47,18 @@ function solve_bcd_subproblem(
                         L - 1
                     )
                 end
+            end
+        end
+    end
+
+    # handle balance constraints
+    if balanced
+        for j in prob_data.variable_cols
+            if L % 2 == 0
+                @constraint(model, sum([i in prob_data.variable_rows[j] ? x[(i, j)] : X[i,j] for i=1:L]) == 0)
+            else
+                @constraint(model, sum([i in prob_data.variable_rows[j] ? x[(i, j)] : X[i,j] for i=1:L]) <= 1)
+                @constraint(model, sum([i in prob_data.variable_rows[j] ? x[(i, j)] : X[i,j] for i=1:L]) >= -1)
             end
         end
     end
@@ -147,6 +160,7 @@ function solve_bcd_subproblem(
     solver::Nothing,
     stop_if_improved::Bool,
     disallow_shifts::Bool,
+    balanced::Bool,
 )
     start = time()
     L, K = size(X)

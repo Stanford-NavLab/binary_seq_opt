@@ -23,7 +23,7 @@ export SLURM_SUBMIT_DIR=/home/users/yalan/binary_seq_opt/sherlock_demo
 # Change to the job directory
 cd $SLURM_SUBMIT_DIR
 
-export GUROBI_HOME="/share/software/user/restricted/gurobi/9.0.3_py36"
+export GUROBI_HOME="/share/software/user/restricted/gurobi/10.0.1_py39"
 # export MOSEKBINDIR="/home/groups/gracegao/mosek/mosek/9.3/tools/platform/linux64x86/bin"
 
 lscpu

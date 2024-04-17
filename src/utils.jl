@@ -40,3 +40,29 @@ end
 function pm1_to_bin(x)
     return ((x .+ 1) .÷ -2) .+ 1
 end
+
+
+""" Flip bits until a code family is balanced """
+function balance_code_family(X::Matrix{Int})
+    L, K = size(X)
+    for k = 1:K
+        curr_sum = sum(X[:, k])
+        i = 1
+        while curr_sum != (L % 2 == 0 ? 0 : 1)
+            # flip bit if reduces imbalance
+            if curr_sum > 0 && X[i, k] == 1
+                X[i, k] = -1
+                curr_sum -= 2
+            elseif curr_sum < 0 && X[i, k] == -1
+                X[i, k] = 1
+                curr_sum += 2
+            end
+            # circularly update index
+            i += 1
+            if i > L
+                i = 1
+            end
+        end
+    end
+    return X
+end

@@ -34,6 +34,7 @@ argnames = [
     ("solver_procs", Int, 2),
     ("brute_force", Bool, false),
     ("max_columns", Int, typemax(Int)),
+    ("balanced", Bool, false),
     ("solver_time_limit", Float64, Inf),
 ]
 
@@ -70,6 +71,10 @@ end
 # generate initial code
 Random.seed!(args["seed"])
 X0 = randb(args["L"], args["K"])
+if args["balanced"]
+    # balance constraint: sum of each column is 0 (even length) or 1
+    X0 = balance_code_family(X0)
+end
 
 # parse objective function
 obj_sym = Symbol(args["objective"])
@@ -94,6 +99,7 @@ bcd = BCD(
     X0 = X0,
     log_path = results_path,
     log_freq = args["log_freq"],
+    balanced = args["balanced"],
 )
 
 bcd(args["max_iter"])

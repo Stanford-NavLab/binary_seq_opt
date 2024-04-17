@@ -14,6 +14,7 @@ struct BCD{I,O,S,D}
     stop_if_improved::Bool
     min_obj_val::Float64
     disallow_shifts::Bool
+    balanced::Bool
     obj_values::Vector{Float64}
     log_path::String
     log_name::String
@@ -26,6 +27,7 @@ struct BCD{I,O,S,D}
         stop_if_improved::Bool = false,
         min_obj_val=-Inf,
         disallow_shifts::Bool = false,
+        balanced::Bool = false,
         log_path::String = "",
         log_name::String = "BCD-" *
                            string(objective) *
@@ -50,6 +52,7 @@ struct BCD{I,O,S,D}
             stop_if_improved,
             min_obj_val,
             disallow_shifts,
+            balanced,
             zeros(0),
             log_path,
             log_name,
@@ -98,6 +101,7 @@ function step(f::BCD, t::Int)
         f.solver,
         f.stop_if_improved,
         f.disallow_shifts,
+        f.balanced,
     )
     elapsed = time() - start
     new_obj = f.objective(Xnew)
