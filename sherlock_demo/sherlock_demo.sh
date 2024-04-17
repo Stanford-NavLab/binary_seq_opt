@@ -18,7 +18,8 @@ module load julia
 module load gurobi
 
 # Change to the directory of script
-export SLURM_SUBMIT_DIR=/home/users/yalan/binary_seq_opt/sherlock_demo
+# export SLURM_SUBMIT_DIR=/home/users/yalan/binary_seq_opt/sherlock_demo
+export SLURM_SUBMIT_DIR=/home/groups/gracegao/prn_codes/binary_seq_opt/sherlock_demo
 
 # Change to the job directory
 cd $SLURM_SUBMIT_DIR
