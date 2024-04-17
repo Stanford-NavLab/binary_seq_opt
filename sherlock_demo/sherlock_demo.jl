@@ -97,9 +97,9 @@ bcd = BCD(
     objective,
     solver;
     X0 = X0,
+    balanced = args["balanced"],
     log_path = results_path,
     log_freq = args["log_freq"],
-    balanced = args["balanced"],
 )
 
 bcd(args["max_iter"])
